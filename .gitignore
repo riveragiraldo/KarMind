@@ -1,0 +1,30 @@
+# Entornos virtuales
+env/
+venv/
+
+# Archivos de configuración locales
+*.pyc
+__pycache__/
+*.pyo
+*.pyd
+*.db
+*.sqlite3
+
+# Archivos de log
+*.log
+
+# Archivos de sistema
+.DS_Store
+Thumbs.db
+
+# Archivos de IDE
+.vscode/
+.idea/
+
+# Archivos de media (si no quieres versionarlos)
+frontend/media/
+frontend/staticfiles/
+
+# Archivos temporales
+*.bak
+*.tmp

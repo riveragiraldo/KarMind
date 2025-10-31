@@ -1,0 +1,122 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block title %}KarMind | Soluciones para empresas: Gestión Inteligente y Transformación Digital PYME{% endblock %}
+
+{% block content %}
+<!-- 1. HERO SECTION: Enfoque Humanista y Visión de Futuro (Palabras clave: "Transformación Digital", "Gestión Inteligente") -->
+<section class="bg-gray-900 text-white min-h-[85vh] flex items-center overflow-hidden relative">
+    <!-- Fondo Animado Blob (Visual) -->
+    <div class="absolute inset-0 z-0">
+        <div class="absolute top-0 left-0 w-64 h-64 bg-blue-600 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob"></div>
+        <div class="absolute top-0 right-0 w-64 h-64 bg-purple-600 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-2000"></div>
+        <div class="absolute bottom-0 left-1/2 w-64 h-64 bg-green-600 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-4000"></div>
+    </div>
+
+    <div class="container mx-auto px-6 py-24 relative z-10">
+        <div class="max-w-4xl mx-auto text-center">
+            
+            <!-- H1: Titular principal con foco en el SEO -->
+            <h1 class="text-5xl md:text-7xl font-extrabold mb-6 leading-tight" style="letter-spacing: -2px;">
+                <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-green-400">KarMind</span>:
+            </h1>
+            
+            <!-- Subtítulo H2 (SEO Secundario): Enfocamos en la ayuda a la PYME/MICRO -->
+            <h2 class="text-2xl md:text-4xl mb-8 font-light text-gray-300">
+                La <span class="font-bold text-white">transformación digital</span> al alcance de tu <span class="font-bold text-white">PYME</span>
+            </h2>
+
+            <!-- Lema y Propósito (Eslogan) -->
+            <p class="text-xl text-gray-400 max-w-2xl mx-auto mb-12">
+                <b>Gestión inteligente para un futuro sostenible.</b><br> Desarrollamos <i>soluciones para empresas</i> que quieren crecer con tecnología accesible, ética y con propósito.
+            </p>
+
+            <div class="flex flex-wrap justify-center gap-4">
+                <!-- Botón de Acción Principal (Contacto) -->
+                <a href="#contacto" class="px-8 py-3 bg-gradient-to-r from-blue-500 to-blue-600 rounded-lg font-bold text-white text-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 shadow-blue-500/50">
+                    Quiero más información <i class="fa-solid fa-arrow-right ml-2"></i>
+                </a>
+                <!-- Botón de Acción Secundaria (Ver Soluciones) -->
+                <a href="#features" class="px-8 py-3 border-2 border-green-500/50 rounded-lg font-medium text-lg text-gray-300 hover:bg-green-500/10 transition">
+                    Ver Soluciones Tecnológicas
+                </a>
+            </div>
+            
+            <!-- Opcional: Iconografía de Confianza o Dashboard -->
+            <div class="mt-16">
+                <p class="text-gray-500 text-sm font-semibold tracking-wider uppercase">
+                    Innovación con propósito. Humanismo tecnológico.
+                </p>
+            </div>
+            
+        </div>
+    </div>
+</section>
+
+<!-- 2. SECCIÓN DE VALOR/SOLUCIONES (Features) -->
+<section id="features" class="py-24 bg-gray-50">
+    <div class="container mx-auto px-6">
+        <div class="text-center max-w-3xl mx-auto mb-16">
+            <span class="inline-block px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-semibold mb-4">PARA LAS MICRO, PEQUEÑAS Y MEDIANAS EMPRESAS</span>
+            <h2 class="text-4xl font-bold text-gray-900 mb-4">Soluciones Tecnológicas para tu PYME</h2>
+            <p class="text-xl text-gray-600">Ayudamos a las empresas a simplificar y automatizar su gestión usando tecnología que realmente funciona.</p>
+        </div>
+
+        <!-- Grid de Tarjetas de Servicios -->
+        <div class="grid md:grid-cols-3 gap-8">
+            
+            <!-- Tarjeta 1: Automatización y Gestión -->
+            <div class="bg-white rounded-xl shadow-lg transition-all duration-500 hover:shadow-xl hover:-translate-y-2 p-8">
+                <div class="w-14 h-14 bg-green-100 rounded-lg flex items-center justify-center mb-6">
+                    <i class="fa-solid fa-robot fa-xl text-green-600"></i>
+                </div>
+                <h3 class="text-xl font-bold text-gray-900 mb-3">Sistemas de Gestión a la Medida</h3>
+                <p class="text-gray-600 mb-4">
+                    Desarrollo de aplicativos internos (ERPs/CRMs/Logística) diseñados para las necesidades únicas de tu operación.
+                </p>
+                <ul class="space-y-2 text-sm text-gray-500 mt-4">
+                    <li class="flex items-center"><i class="fa-solid fa-check w-4 h-4 mr-2 text-green-500"></i> Automatización de pedidos</li>
+                    <li class="flex items-center"><i class="fa-solid fa-check w-4 h-4 mr-2 text-green-500"></i> Control de inventario y producción</li>
+                </ul>
+            </div>
+
+            <!-- Tarjeta 2: Innovación y Asesoría (IA/NoCode) -->
+            <div class="bg-white rounded-xl shadow-lg transition-all duration-500 hover:shadow-xl hover:-translate-y-2 p-8">
+                <div class="w-14 h-14 bg-purple-100 rounded-lg flex items-center justify-center mb-6">
+                    <i class="fa-solid fa-lightbulb fa-xl text-purple-600"></i>
+                </div>
+                <h3 class="text-xl font-bold text-gray-900 mb-3">Asesoría e Implementación Digital</h3>
+                <p class="text-gray-600 mb-4">
+                    Te guiamos en la adopción de herramientas de vanguardia, desde <b>Inteligencia Artificial</b> para negocios hasta <i>aplicaciones y automatizaciones no-code</i> para tu empresa.
+                </p>
+                <ul class="space-y-2 text-sm text-gray-500 mt-4">
+                    <li class="flex items-center"><i class="fa-solid fa-check w-4 h-4 mr-2 text-purple-500"></i> Integración de Chatbots y IA</li>
+                    <li class="flex items-center"><i class="fa-solid fa-check w-4 h-4 mr-2 text-purple-500"></i> Estrategia de Redes Sociales</li>
+                </ul>
+            </div>
+
+            <!-- Tarjeta 3: Crecimiento Sostenible (El pilar Humano/Partnership) -->
+            <div class="bg-white rounded-xl shadow-lg transition-all duration-500 hover:shadow-xl hover:-translate-y-2 p-8">
+                <div class="w-14 h-14 bg-blue-100 rounded-lg flex items-center justify-center mb-6">
+                    <i class="fa-solid fa-handshake-angle fa-xl text-blue-600"></i>
+                </div>
+                <h3 class="text-xl font-bold text-gray-900 mb-3">Partnership y Soporte Continuo</h3>
+                <p class="text-gray-600 mb-4">
+                    Vamos más allá del desarrollo. Nos convertimos en tu socio tecnológico para garantizar un <i>crecimiento responsable</b>.
+                </p>
+                <ul class="space-y-2 text-sm text-gray-500 mt-4">
+                    <li class="flex items-center"><i class="fa-solid fa-check w-4 h-4 mr-2 text-blue-500"></i> Capacitación tecnológica a tu equipo</li>
+                    <li class="flex items-center"><i class="fa-solid fa-check w-4 h-4 mr-2 text-blue-500"></i> Evolución continua de la plataforma</li>
+                </ul>
+            </div>
+        </div>
+        
+        <!-- CALL TO ACTION SECUNDARIO para cerrar la sección -->
+        <div class="text-center mt-16">
+            <a href="#" class="px-8 py-3 border-2 border-gray-400 rounded-lg font-medium text-lg text-gray-700 hover:bg-gray-200 transition">
+                Conoce a fondo nuestra Misión y Visión &rarr;
+            </a>
+        </div>
+    </div>
+</section>
+{% endblock %}
