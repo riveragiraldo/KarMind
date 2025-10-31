@@ -9,6 +9,8 @@ User = get_user_model()
 
 
 
+
+
 # =====================================================
 # 📘 Descripción general del archivo
 # =====================================================
@@ -235,30 +237,47 @@ class UserAdmin(ImportExportModelAdmin):
 
 
 # =====================================================
-# 🗂️ Administración de Configuración
+# 🗂️ Administración de Configuración del Sistema KarMind
+# =====================================================
+# Este módulo define la interfaz administrativa del modelo
+# Configuración, permitiendo la gestión de parámetros globales
+# del sistema, la carga del documento PTDP y del logotipo institucional.
 # =====================================================
 
 @admin.register(Configuracion)
 class ConfiguracionAdmin(admin.ModelAdmin):
     """
     🎛️ Panel administrativo para el modelo Configuración.
-    Muestra los campos principales y un enlace de descarga
-    para el archivo PTDP.
+    Permite gestionar los parámetros principales del sistema,
+    el documento PTDP y el logotipo institucional.
     """
+
+    # ------------------------------------------------------
+    # 📋 Listado principal
+    # ------------------------------------------------------
     list_display = (
         'id',
         'periodo_pago',
         'periodo_revision',
         'ptdp_link',
+        'logo_preview',
         'fecha_creacion',
         'fecha_actualizacion',
         'is_active',
     )
-    readonly_fields = ('fecha_creacion', 'fecha_actualizacion')
 
+    readonly_fields = (
+        'fecha_creacion',
+        'fecha_actualizacion',
+        'logo_preview',
+    )
+
+    # ------------------------------------------------------
+    # 🔗 Enlace de descarga para el documento PTDP
+    # ------------------------------------------------------
     def ptdp_link(self, obj):
         """
-        🔗 Muestra un enlace descargable con el nombre del archivo.
+        Muestra un enlace descargable con el nombre del archivo PTDP.
         Si no existe archivo, muestra 'Sin archivo'.
         """
         if obj.ptdp:
@@ -268,14 +287,53 @@ class ConfiguracionAdmin(admin.ModelAdmin):
                 obj.filename()
             )
         return "Sin archivo"
+
     ptdp_link.short_description = "PTDP"
 
-    # Opcional: orden de los campos en el formulario de edición
+    # ------------------------------------------------------
+    # 🖼️ Vista previa del logo institucional
+    # ------------------------------------------------------
+    def logo_preview(self, obj):
+        """
+        Muestra una vista previa del logotipo institucional en miniatura.
+        Si no hay logo cargado, muestra 'Sin logo'.
+        """
+        if obj.logo:
+            return format_html(
+                '<img src="{}" width="80" height="80" style="border-radius:8px; border:1px solid #ccc;"/>',
+                obj.logo.url
+            )
+        return "Sin logo"
+
+    logo_preview.short_description = "Logo"
+
+    # ------------------------------------------------------
+    # 🧩 Estructura del formulario de edición
+    # ------------------------------------------------------
     fieldsets = (
         ("Parámetros de configuración", {
-            "fields": ("periodo_pago", "periodo_revision", "ptdp")
+            "fields": (
+                "periodo_pago",
+                "periodo_revision",
+                "ptdp",
+                "logo",
+                "logo_preview",
+            )
         }),
         ("Auditoría", {
-            "fields": ("creado_por", "actualizado_por", "fecha_creacion", "fecha_actualizacion", "is_active")
+            "fields": (
+                "creado_por",
+                "actualizado_por",
+                "fecha_creacion",
+                "fecha_actualizacion",
+                "is_active",
+            )
         }),
     )
+
+    # ------------------------------------------------------
+    # ⚙️ Configuración adicional
+    # ------------------------------------------------------
+    ordering = ('-fecha_creacion',)
+    list_filter = ('is_active',)
+    search_fields = ('periodo_pago', 'periodo_revision')

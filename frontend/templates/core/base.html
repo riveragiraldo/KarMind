@@ -17,6 +17,15 @@
     <!-- Font Awesome (Iconografía) -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
 
+    <!-- 1. CAMBIO: CONFIGURACIÓN DEL FAVICON (ICONO DE LA PESTAÑA) -->
+    {% if logo_url %}
+        <link rel="icon" href="{{ logo_url }}" type="image/png">
+    {% else %}
+        <!-- Fallback si no hay logo dinámico (ej: si se usa un logo estático por defecto) -->
+        <!-- Se asume un archivo favicon.ico o .png en /static/core/ -->
+        <link rel="icon" href="{% static 'core/favicon.png' %}" type="image/png">
+    {% endif %}
+
     <style>
         /* Tipografía Base */
         body { font-family: 'Inter', sans-serif; }
@@ -90,8 +99,17 @@
     <header class="sticky top-0 z-40">
         <nav class="bg-gray-900/90 backdrop-blur-lg border-b border-gray-700/50">
             <div class="container mx-auto px-6 py-4 flex items-center justify-between">
-                <a href="{% url 'core:home' %}" class="text-2xl font-extrabold text-white tracking-tight">
-                    <span class="text-blue-400">Kar</span><span class="text-green-400">Mind</span>
+                
+                <!-- LOGO DINÁMICO + TEXTO KarMind (Ahora h-10 y siempre con texto) -->
+                <a href="{% url 'core:home' %}" class="flex items-center space-x-2">
+                    {% if logo_url %}
+                        <!-- 2. CAMBIO: Logo más grande (h-10) y texto acompañante -->
+                        <img src="{{ logo_url }}" alt="Logo de KarMind" class="h-10 w-auto">
+                    {% endif %}
+                    
+                    <span class="text-2xl font-extrabold text-white tracking-tight">
+                        <span class="text-blue-400">Kar</span><span class="text-green-400">Mind</span>
+                    </span>
                 </a>
 
                 <!-- Botón de Menú Móvil -->
@@ -103,8 +121,7 @@
                 <!-- Menú Desktop -->
                 <div class="hidden lg:flex items-center space-x-6">
                     <a href="{% url 'core:home' %}" class="text-gray-300 hover:text-white font-medium transition">Inicio</a>
-                    <a href="#" class="text-gray-300 hover:text-white font-medium transition">Nosotros</a>
-                    <!-- CAMBIO AQUÍ: Funcionalidades -> Soluciones -->
+                    <a href="{% url 'core:nosotros' %}" class="text-gray-300 hover:text-white font-medium transition">Nosotros</a>
                     <a href="{% url 'core:home' %}#features" class="text-gray-300 hover:text-white font-medium transition">Soluciones</a>
                     <a href="{% url 'core:home' %}#contacto" class="text-gray-300 hover:text-white font-medium transition">Contacto</a>
                     <a href="{% url 'core:login' %}" class="px-5 py-2 bg-gradient-to-r from-green-500 to-teal-500 text-gray-900 rounded-lg font-semibold hover:from-green-600 hover:to-teal-600 transition duration-300 shadow-lg">
@@ -137,12 +154,11 @@
     </header>
 
     <!-- CONTENIDO ESPECÍFICO DE LA PÁGINA (MAIN) -->
-    <!-- Aquí es donde va el contenido de index.html (Hero y Secciones) -->
     <main class="flex-grow">
         {% block content %}{% endblock %}
     </main>
 
-    <!-- FOOTER (Common to all pages) -->
+    <!-- FOOTER -->
     <footer class="bg-gray-900 text-white pt-20 pb-12 mt-auto">
         <div class="container mx-auto px-6">
             <div class="grid md:grid-cols-5 gap-12 border-b border-gray-700 pb-12">
@@ -174,7 +190,7 @@
                         <li><a href="{% url 'core:home' %}#features" class="text-gray-400 hover:text-white transition">Gestión a la Medida</a></li>
                         <li><a href="{% url 'core:home' %}#features" class="text-gray-400 hover:text-white transition">IA y Automatización</a></li>
                         <li><a href="{% url 'core:home' %}#features" class="text-gray-400 hover:text-white transition">Consultoría Digital</a></li>
-                        <li><a href="#" class="text-gray-400 hover:text-white transition">Preguntas Frecuentes</a></li>
+                        <li><a href="{% url 'core:faqs' %}" class="text-gray-400 hover:text-white transition">Preguntas Frecuentes</a></li>
                     </ul>
                 </div>
                 
@@ -182,9 +198,9 @@
                 <div>
                     <h4 class="text-lg font-semibold mb-4">Información Legal</h4>
                     <ul class="space-y-2 text-sm">
-                        <li><a href="#" class="text-gray-400 hover:text-white transition">Política de Datos Personales</a></li>
-                        <li><a href="#" class="text-gray-400 hover:text-white transition">Términos de Servicio</a></li>
-                        <li><a href="#" class="text-gray-400 hover:text-white transition">Acerca de este Sitio Web</a></li>
+                        <li><a href="{% url 'core:ptdp' %}" class="text-gray-400 hover:text-white transition">Política de Datos Personales</a></li>
+                        <li><a href="{% url 'core:terminos_servicio' %}" class="text-gray-400 hover:text-white transition">Términos de Servicio</a></li>
+                        <li><a href="{% url 'core:acerca_de' %}" class="text-gray-400 hover:text-white transition">Acerca de este Sitio Web</a></li>
                         <li><a href="#" class="text-gray-400 hover:text-white transition">PQRS (Peticiones)</a></li>
                     </ul>
                 </div>

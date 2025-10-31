@@ -1,0 +1,275 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block title %}KarMind | Política de Tratamiento de Datos Personales{% endblock %}
+
+{% block content %}
+
+<!-- 1. HERO SECTION: Título Principal de PTDP -->
+<section class="bg-gray-900 text-white min-h-[50vh] flex items-center overflow-hidden relative">
+    <!-- Fondo Animado Blob (Visual) -->
+    <div class="absolute inset-0 z-0">
+        <div class="absolute top-0 left-0 w-64 h-64 bg-purple-600 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob"></div>
+        <div class="absolute top-0 right-0 w-64 h-64 bg-yellow-600 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-2000"></div>
+    </div>
+
+    <div class="container mx-auto px-6 py-24 relative z-10">
+        <div class="max-w-4xl mx-auto text-center">
+            
+            <!-- Título Principal -->
+            <h1 class="text-5xl md:text-6xl font-extrabold mb-4 leading-tight">
+                <span class="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-yellow-400">Política de Datos Personales</span>
+            </h1>
+            
+            <!-- Subtítulo H2 (Eslogan) -->
+            <h2 class="text-2xl md:text-3xl mb-8 font-light text-gray-300">
+                Transparencia y Seguridad: Nuestro <span class="font-bold text-white">Compromiso Ético</span> con tu Información.
+            </h2>
+
+            <!-- Propósito -->
+            <p class="text-lg text-gray-400 max-w-3xl mx-auto">
+                En KarMind, la privacidad y el tratamiento ético de tus datos son pilares de nuestro Humanismo Tecnológico.
+            </p>
+            
+        </div>
+    </div>
+</section>
+
+<!-- 2. SECCIÓN: CONTENIDO COMPLETO DE LA POLÍTICA -->
+<section id="policy-content" class="py-24 bg-gray-50">
+    <div class="container mx-auto px-6 max-w-4xl">
+
+        <h3 class="text-4xl font-extrabold text-gray-900 text-center mb-10">
+            POLÍTICA DE TRATAMIENTO DE DATOS PERSONALES DE KARMIND
+        </h3>
+        
+        <!-- Botón de Descarga Rápida (Solo si la URL existe) -->
+        {% if ptdp_pdf_url %}
+            <div class="text-center mb-12">
+                <a href="{{ ptdp_pdf_url }}" download class="inline-flex items-center justify-center px-8 py-3 text-base font-medium rounded-lg text-white bg-green-600 hover:bg-green-700 transition-colors duration-300 shadow-lg shadow-green-500/50">
+                    Descargar Documento Oficial (PDF) <i class="fa-solid fa-download ml-2"></i>
+                </a>
+            </div>
+        {% endif %}
+
+        <!-- Contenedor del Texto de la Política (Formato legible) -->
+        <div class="bg-white rounded-xl shadow-2xl p-8 md:p-12 space-y-8 text-gray-700 text-lg leading-relaxed">
+
+            <!-- 1. Objeto y alcance -->
+            <div class="space-y-3">
+                <h4 class="text-2xl font-bold text-blue-700 border-b pb-2">1. Objeto y alcance</h4>
+                <p>
+                    La presente política establece los lineamientos bajo los cuales KarMind realiza la recolección, almacenamiento, uso, circulación, supresión y demás operaciones sobre datos personales en cumplimiento de la Ley 1581 de 2012, el Decreto 1377 de 2013, y las directrices de la Superintendencia de Industria y Comercio (SIC).
+                </p>
+                <p>
+                    Esta política aplica a todas las bases de datos y tratamientos de información personal realizados en el marco de las actividades de KarMind, incluyendo la prestación de servicios tecnológicos, desarrollo de software de gestión y otros servicios relacionados, así como a los datos personales de clientes, usuarios, proveedores y demás personas con las cuales KarMind tenga relación.
+                </p>
+            </div>
+
+            <!-- 2. Principios rectores del tratamiento -->
+            <div class="space-y-3">
+                <h4 class="text-2xl font-bold text-blue-700 border-b pb-2">2. Principios rectores del tratamiento</h4>
+                <p>
+                    KarMind garantiza que el tratamiento de los datos personales se realizará conforme a los siguientes principios:
+                </p>
+                <ul class="list-disc list-inside space-y-1 pl-4">
+                    <li><span class="font-semibold">Legalidad:</span> El tratamiento se efectuará de acuerdo con la normatividad vigente.</li>
+                    <li><span class="font-semibold">Finalidad:</span> Los datos se recolectan con propósitos legítimos y específicos informados al titular.</li>
+                    <li><span class="font-semibold">Libertad:</span> El tratamiento se realiza con autorización previa, expresa e informada del titular.</li>
+                    <li><span class="font-semibold">Veracidad o calidad:</span> La información será veraz, completa, exacta, actualizada y comprobable.</li>
+                    <li><span class="font-semibold">Transparencia:</span> Se garantiza el derecho del titular a conocer y acceder a la información.</li>
+                    <li><span class="font-semibold">Acceso y circulación restringida:</span> Solo se tratarán datos por personal autorizado.</li>
+                    <li><span class="font-semibold">Seguridad:</span> Se aplican medidas técnicas, humanas y administrativas que protegen la información.</li>
+                    <li><span class="font-semibold">Confidencialidad:</span> Toda información personal se tratará bajo reserva y discreción profesional.</li>
+                </ul>
+            </div>
+            
+            <!-- 3. Categorías de datos tratados -->
+            <div class="space-y-3">
+                <h4 class="text-2xl font-bold text-blue-700 border-b pb-2">3. Categorías de datos tratados</h4>
+                <p>
+                    KarMind podrá recolectar los siguientes tipos de información personal:
+                </p>
+                <ul class="list-disc list-inside space-y-1 pl-4">
+                    <li>Nombres y apellidos.</li>
+                    <li>Número de identificación.</li>
+                    <li>Teléfonos de contacto.</li>
+                    <li>Correos electrónicos.</li>
+                    <li>Dirección o ubicación.</li>
+                    <li>Datos asociados a la relación contractual o comercial.</li>
+                </ul>
+                <p class="font-semibold mt-4">
+                    Importante: KarMind no recolecta datos sensibles ni información de menores de edad.
+                </p>
+            </div>
+            
+            <!-- 4. Finalidades del tratamiento -->
+            <div class="space-y-3">
+                <h4 class="text-2xl font-bold text-blue-700 border-b pb-2">4. Finalidades del tratamiento</h4>
+                <p>
+                    Los datos personales recolectados serán tratados para las siguientes finalidades:
+                </p>
+                <ul class="list-disc list-inside space-y-1 pl-4">
+                    <li>Gestionar la relación contractual, comercial o técnica con los clientes.</li>
+                    <li>Brindar soporte técnico y asistencia sobre los servicios contratados.</li>
+                    <li>Enviar notificaciones, actualizaciones o información relacionada con los servicios.</li>
+                    <li>Ejecutar actividades de mercadeo, promoción y fidelización, siempre con autorización del titular.</li>
+                    <li>Cumplir con obligaciones legales o contractuales derivadas de la relación con el titular.</li>
+                </ul>
+            </div>
+
+            <!-- 5. Autorización del titular -->
+            <div class="space-y-3">
+                <h4 class="text-2xl font-bold text-blue-700 border-b pb-2">5. Autorización del titular</h4>
+                <p>
+                    La recolección y tratamiento de datos personales se realiza previa autorización libre, previa, expresa e informada del titular, mediante:
+                </p>
+                <ul class="list-disc list-inside space-y-1 pl-4">
+                    <li>Formularios web con checkbox de aceptación.</li>
+                    <li>Contratos digitales o físicos.</li>
+                    <li>Canales electrónicos en los que se comunique esta política.</li>
+                </ul>
+                <p>
+                    El titular podrá revocar en cualquier momento su autorización o solicitar la supresión de sus datos conforme al procedimiento descrito en esta política.
+                </p>
+            </div>
+            
+            <!-- 6. Aviso de privacidad (Detalles de Contacto Resumidos) -->
+            <div class="space-y-3 p-6 bg-gray-100 rounded-lg border-l-4 border-yellow-500">
+                <h4 class="text-2xl font-bold text-blue-700">6. Aviso de privacidad (Resumen)</h4>
+                <p><span class="font-semibold">Responsable:</span> KarMind</p>
+                <p><span class="font-semibold">Finalidad:</span> Gestionar solicitudes, brindar información sobre servicios tecnológicos y de software, y mantener contacto con clientes o interesados.</p>
+                <p><span class="font-semibold">Derechos del titular:</span> Conocer, actualizar, rectificar o suprimir sus datos personales conforme a la Ley 1581 de 2012.</p>
+                <p><span class="font-semibold">Contacto:</span> karmindco@gmail.com</p>
+                <p><span class="font-semibold">Política completa:</span> Disponible en www.karmind.co.</p>
+            </div>
+
+            <!-- 7. Derechos de los titulares -->
+            <div class="space-y-3">
+                <h4 class="text-2xl font-bold text-blue-700 border-b pb-2">7. Derechos de los titulares</h4>
+                <p>
+                    De acuerdo con la Ley 1581 de 2012, los titulares de datos personales tienen derecho a:
+                </p>
+                <ul class="list-disc list-inside space-y-1 pl-4">
+                    <li>Conocer, actualizar y rectificar sus datos personales.</li>
+                    <li>Solicitar prueba de la autorización otorgada.</li>
+                    <li>Ser informados sobre el uso que se ha dado a sus datos.</li>
+                    <li>Presentar quejas ante la Superintendencia de Industria y Comercio.</li>
+                    <li>Revocar la autorización y/o solicitar la supresión de sus datos.</li>
+                    <li>Acceder de manera gratuita a su información personal.</li>
+                </ul>
+            </div>
+            
+            <!-- 8. Procedimiento para ejercer derechos -->
+            <div class="space-y-3">
+                <h4 class="text-2xl font-bold text-blue-700 border-b pb-2">8. Procedimiento para ejercer derechos</h4>
+                <p>
+                    El titular podrá ejercer sus derechos de acceso, rectificación, actualización, supresión o revocatoria de autorización mediante solicitud enviada al correo electrónico <span class="font-semibold text-blue-600">karmindco@gmail.com</span>.
+                </p>
+                <p>Los plazos de respuesta serán:</p>
+                <ul class="list-disc list-inside space-y-1 pl-4">
+                    <li>Consultas: dentro de los 10 días hábiles siguientes a la recepción.</li>
+                    <li>Reclamos: dentro de los 15 días hábiles siguientes.</li>
+                </ul>
+                <p>
+                    Si se requiere un plazo mayor, KarMind informará al titular antes del vencimiento del término inicial, indicando los motivos del retraso.
+                </p>
+            </div>
+            
+            <!-- 9. Medidas de seguridad -->
+            <div class="space-y-3">
+                <h4 class="text-2xl font-bold text-blue-700 border-b pb-2">9. Medidas de seguridad <i class="fa-solid fa-shield-halved text-green-500 ml-2"></i></h4>
+                <p>
+                    KarMind implementa medidas técnicas, administrativas y físicas para garantizar la protección de los datos personales frente a pérdida, acceso no autorizado, uso indebido, alteración o destrucción.
+                </p>
+                <p>Entre estas medidas se incluyen:</p>
+                <ul class="list-disc list-inside space-y-1 pl-4">
+                    <li>Uso de contraseñas seguras.</li>
+                    <li>Cifrado de información y bases de datos.</li>
+                    <li>Control de accesos por roles.</li>
+                    <li>Backups periódicos.</li>
+                    <li>Políticas internas de confidencialidad y acceso restringido.</li>
+                    <li>Almacenamiento en entornos de nube con servidores seguros.</li>
+                </ul>
+            </div>
+            
+            <!-- 10. Transmisión y transferencia de datos -->
+            <div class="space-y-3">
+                <h4 class="text-2xl font-bold text-blue-700 border-b pb-2">10. Transmisión y transferencia de datos</h4>
+                <p>
+                    KarMind <span class="font-bold underline">no comparte, transmite ni transfiere datos personales</span> a terceros dentro o fuera de Colombia.
+                </p>
+                <p>
+                    La información que los clientes registran en los sistemas o aplicaciones desarrolladas por KarMind es de uso exclusivo de cada cliente, y KarMind actúa únicamente como proveedor tecnológico, sin disponer de dichos datos para fines propios.
+                </p>
+            </div>
+            
+            <!-- 11. Conservación y eliminación de datos -->
+            <div class="space-y-3">
+                <h4 class="text-2xl font-bold text-blue-700 border-b pb-2">11. Conservación y eliminación de datos</h4>
+                <p>
+                    Los datos personales serán conservados por un período mínimo de diez (10) años o durante el tiempo que sea necesario para cumplir las finalidades del tratamiento o las obligaciones legales aplicables.
+                </p>
+                <p>
+                    Los datos serán eliminados o anonimizados cuando el titular lo solicite, o cuando no exista obligación legal o contractual que justifique su conservación.
+                </p>
+            </div>
+            
+            <!-- 12. Uso de cookies y tecnologías de seguimiento -->
+            <div class="space-y-3">
+                <h4 class="text-2xl font-bold text-blue-700 border-b pb-2">12. Uso de cookies y tecnologías de seguimiento</h4>
+                <p>
+                    El sitio web www.karmind.co puede utilizar cookies y tecnologías similares para:
+                </p>
+                <ul class="list-disc list-inside space-y-1 pl-4">
+                    <li>Mejorar la experiencia del usuario.</li>
+                    <li>Recordar preferencias de navegación.</li>
+                    <li>Analizar tráfico y rendimiento del sitio.</li>
+                </ul>
+                <p>
+                    El usuario puede configurar su navegador para aceptar, rechazar o eliminar las cookies. La desactivación de estas puede afectar algunas funcionalidades del sitio web.
+                </p>
+            </div>
+            
+            <!-- 13. Vigencia y modificaciones -->
+            <div class="space-y-3">
+                <h4 class="text-2xl font-bold text-blue-700 border-b pb-2">13. Vigencia y modificaciones</h4>
+                <p>
+                    La presente política entra en vigor a partir del <span class="font-bold">30 de octubre de 2025</span> y permanecerá vigente mientras KarMind realice tratamiento de datos personales.
+                </p>
+                <p>
+                    Cualquier modificación será publicada en el sitio web oficial www.karmind.co y comunicada por los medios de contacto disponibles.
+                </p>
+            </div>
+            
+            <!-- 14. Información de contacto del responsable del tratamiento (Tabla o Lista) -->
+            <div class="space-y-3">
+                <h4 class="text-2xl font-bold text-blue-700 border-b pb-2">14. Información de contacto del responsable del tratamiento</h4>
+                <div class="space-y-2 p-4 bg-purple-50 rounded-lg">
+                    <p><span class="font-semibold text-purple-700">Razón social o nombre comercial:</span> KarMind</p>
+                    <p><span class="font-semibold text-purple-700">NIT:</span> 18517322</p>
+                    <p><span class="font-semibold text-purple-700">Dirección:</span> Carrera 21 B # 12-75, La Aurora, Dosquebradas, Risaralda – Colombia</p>
+                    <p><span class="font-semibold text-purple-700">Teléfono:</span> 3116134662</p>
+                    <p><span class="font-semibold text-purple-700">Correo electrónico:</span> <a href="mailto:karmindco@gmail.com" class="text-blue-600 hover:underline">karmindco@gmail.com</a></p>
+                    <p><span class="font-semibold text-purple-700">Encargado de protección de datos:</span> Mariel Andrés Rivera Giraldo – Director de Tecnologías de la Información.</p>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+</section>
+
+<!-- 3. SECCIÓN: LLAMADA A LA ACCIÓN FINAL -->
+<section class="py-16 bg-gray-900 text-white text-center">
+    <div class="container mx-auto px-6">
+        <h2 class="text-3xl font-bold mb-4">¿Tienes preguntas sobre la privacidad?</h2>
+        <p class="text-xl text-gray-400 mb-8">Nuestro equipo de ética y cumplimiento está disponible para resolver cualquier inquietud.</p>
+        
+        <a href="#contacto" class="inline-flex items-center justify-center px-10 py-3 text-lg font-medium rounded-lg text-white bg-gradient-to-r from-blue-500 to-green-600 hover:opacity-90 transition-opacity duration-300 shadow-lg shadow-blue-500/50">
+            Contactar a Cumplimiento <i class="fa-solid fa-shield-halved ml-2"></i>
+        </a>
+    </div>
+</section>
+
+{% endblock %}

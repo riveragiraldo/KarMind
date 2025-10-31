@@ -1,0 +1,161 @@
+{% extends 'core/base.html' %}
+{% load static %}
+
+{% block title %}KarMind | Términos de Servicio y Condiciones de Uso{% endblock %}
+
+{% block content %}
+
+<!-- 1. HERO SECTION: Título Principal de Términos de Servicio -->
+
+<section class="bg-gray-900 text-white min-h-[50vh] flex items-center overflow-hidden relative">
+    <!-- Fondo Animado Blob (Visual) -->
+    <div class="absolute inset-0 z-0">
+        <div class="absolute top-0 left-0 w-64 h-64 bg-red-600 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob"></div>
+        <div class="absolute top-0 right-0 w-64 h-64 bg-orange-600 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-2000"></div>
+    </div>
+
+    <div class="container mx-auto px-6 py-24 relative z-10">
+        <div class="max-w-4xl mx-auto text-center">
+            
+            <!-- Título Principal -->
+            <h1 class="text-5xl md:text-6xl font-extrabold mb-4 leading-tight">
+                <span class="text-transparent bg-clip-text bg-gradient-to-r from-red-400 to-orange-400">Términos y Condiciones de Uso</span>
+            </h1>
+            
+            <!-- Subtítulo H2 (Eslogan Legal) -->
+            <h2 class="text-2xl md:text-3xl mb-8 font-light text-gray-300">
+                El Acuerdo Legal que Rige los Servicios de <span class="font-bold text-white">KarMind.</span>
+            </h2>
+
+            <!-- Propósito -->
+            <p class="text-lg text-gray-400 max-w-3xl mx-auto">
+                Este documento establece las reglas y responsabilidades para el uso de nuestro software de gestión, servicios tecnológicos y sitio web. La lectura y aceptación es obligatoria para acceder a nuestros servicios.
+            </p>
+            <p class="mt-4 text-sm text-gray-500">
+                Última actualización: <span class="font-semibold">30 de Octubre de 2025</span>
+            </p>
+            
+        </div>
+    </div>
+</section>
+
+<!-- 2. SECCIÓN: CONTENIDO DETALLADO DE LOS TÉRMINOS -->
+
+<section id="content" class="py-24 bg-gray-50">
+    <div class="container mx-auto px-6 max-w-4xl">
+        <div class="bg-white rounded-xl shadow-2xl p-8 md:p-12 space-y-10 text-gray-700 text-lg leading-relaxed">
+
+            <!-- INTRODUCCIÓN Y ACEPTACIÓN -->
+            <div class="space-y-4">
+                <h3 class="text-3xl font-bold text-gray-900 border-b pb-2">1. Aceptación de los Términos</h3>
+                <p>
+                    Al acceder y utilizar los servicios de software y soluciones tecnológicas (en adelante, "Servicios") proporcionados por KarMind (en adelante, "la Empresa"), usted ("el Usuario" o "el Cliente") acepta estar legalmente sujeto a estos Términos de Servicio y todas las políticas de referencia. Si no está de acuerdo con alguno de los términos, no debe utilizar los Servicios.
+                </p>
+                <p class="p-3 bg-red-50 border-l-4 border-red-500 text-red-800 rounded-md text-base">
+                    Estos términos constituyen un acuerdo vinculante entre KarMind y el Usuario.
+                </p>
+            </div>
+            
+            <!-- LICENCIA DE USO Y PROPIEDAD INTELECTUAL -->
+            <div class="space-y-4">
+                <h3 class="text-3xl font-bold text-gray-900 border-b pb-2">2. Licencia y Propiedad Intelectual</h3>
+                <p>
+                    <strong>2.1. Concesión de Licencia:</strong> KarMind otorga al Cliente una licencia limitada, no exclusiva e intransferible para usar el software y los Servicios durante la vigencia del acuerdo de suscripción.
+                </p>
+                <p>
+                    <strong>2.2. Propiedad Intelectual:</strong> Todos los derechos de propiedad intelectual, incluyendo patentes, derechos de autor, secretos comerciales y marcas asociadas al software, la plataforma y el sitio web de KarMind, son propiedad exclusiva de KarMind.
+                </p>
+                <ul class="list-disc list-inside space-y-1 pl-6 text-base">
+                    <li>El Usuario no puede copiar, modificar, distribuir, vender ni sublicenciar los Servicios de KarMind.</li>
+                    <li>La información y los datos ingresados por el Cliente en el software son propiedad exclusiva del Cliente.</li>
+                </ul>
+            </div>
+            
+            <!-- OBLIGACIONES DEL USUARIO -->
+            <div class="space-y-4">
+                <h3 class="text-3xl font-bold text-gray-900 border-b pb-2">3. Obligaciones y Uso Aceptable</h3>
+                <p>
+                    El Usuario se compromete a utilizar los Servicios de manera responsable y legal.
+                </p>
+                <p>
+                    <strong>3.1. Prohibiciones:</strong> El Usuario tiene estrictamente prohibido:
+                </p>
+                <ul class="list-disc list-inside space-y-2 pl-6 text-base">
+                    <li class="font-medium">Cargar contenido ilegal, difamatorio, obsceno o que viole derechos de terceros.</li>
+                    <li class="font-medium">Intentar acceder a áreas restringidas o sistemas de la Empresa sin autorización.</li>
+                    <li class="font-medium">Utilizar los Servicios para enviar spam o realizar ataques de denegación de servicio.</li>
+                    <li class="font-medium">Compartir credenciales de acceso. El Usuario es responsable de la seguridad de su cuenta y contraseña.</li>
+                </ul>
+            </div>
+            
+            <!-- TARIFAS Y PAGOS -->
+            <div class="space-y-4">
+                <h3 class="text-3xl font-bold text-gray-900 border-b pb-2">4. Tarifas, Pagos y Suscripciones</h3>
+                <p>
+                    <strong>4.1. Facturación:</strong> Las tarifas por los Servicios se cobrarán de acuerdo con el plan de suscripción seleccionado por el Cliente. KarMind se reserva el derecho de modificar sus tarifas, notificando al Cliente con al menos treinta (30) días de antelación.
+                </p>
+                <p>
+                    <strong>4.2. Incumplimiento:</strong> La falta de pago de las tarifas resultará en la suspensión temporal del acceso a los Servicios. Si el incumplimiento persiste, KarMind podrá proceder a la terminación definitiva del contrato.
+                </p>
+            </div>
+            
+            <!-- GARANTÍAS Y EXCLUSIÓN DE RESPONSABILIDAD -->
+            <div class="space-y-4">
+                <h3 class="text-3xl font-bold text-gray-900 border-b pb-2">5. Limitación de Responsabilidad</h3>
+                <p>
+                    KarMind proporciona los Servicios "tal cual" y "según disponibilidad". Aunque nos esforzamos por la excelencia, no garantizamos que el Servicio esté libre de interrupciones o errores en todo momento.
+                </p>
+                <p>
+                    KarMind <strong>no será responsable</strong> por daños indirectos, incidentales, especiales o consecuentes, incluyendo la pérdida de ganancias, datos o interrupción de negocios, que resulten del uso o la incapacidad de usar el Servicio.
+                </p>
+                <p class="p-3 bg-orange-50 border-l-4 border-orange-500 text-orange-800 rounded-md text-base font-semibold">
+                    La responsabilidad total de KarMind ante el Usuario por cualquier reclamo se limitará al monto pagado por el Usuario a KarMind en los doce (12) meses anteriores a la fecha del evento que dio origen al reclamo.
+                </p>
+            </div>
+            
+            <!-- TERMINACIÓN DEL SERVICIO -->
+            <div class="space-y-4">
+                <h3 class="text-3xl font-bold text-gray-900 border-b pb-2">6. Terminación del Contrato</h3>
+                <p>
+                    <strong>6.1. Por el Cliente:</strong> El Cliente puede cancelar su suscripción en cualquier momento, sujeto a las condiciones de su plan contractual.
+                </p>
+                <p>
+                    <strong>6.2. Por KarMind:</strong> KarMind puede suspender o terminar el acceso del Usuario a los Servicios inmediatamente, sin previo aviso, si el Usuario incumple gravemente estos Términos, incluyendo, pero no limitándose a, la falta de pago o el uso prohibido.
+                </p>
+                <p>
+                    Tras la terminación, el Usuario tendrá un plazo limitado (generalmente 30 días) para exportar sus datos, después de lo cual la información podrá ser eliminada permanentemente.
+                </p>
+            </div>
+            
+            <!-- LEY APLICABLE Y JURISDICCIÓN -->
+            <div class="space-y-4">
+                <h3 class="text-3xl font-bold text-gray-900 border-b pb-2">7. Ley Aplicable y Resolución de Disputas</h3>
+                <p>
+                    Estos Términos de Servicio se regirán e interpretarán de acuerdo con las leyes de la <span class="font-semibold">República de Colombia.</span>
+                </p>
+                <p>
+                    Cualquier disputa relacionada con estos Términos será sometida a la jurisdicción exclusiva de los tribunales de la ciudad de Dosquebradas, Risaralda, Colombia.
+                </p>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+<!-- 3. SECCIÓN: LLAMADA A LA ACCIÓN FINAL Y CONTACTO LEGAL -->
+
+<section class="py-16 bg-gray-900 text-white text-center">
+    <div class="container mx-auto px-6">
+        <h2 class="text-3xl font-bold mb-4">Preguntas Frecuentes y Contacto Legal</h2>
+        <p class="text-xl text-gray-400 mb-8">Para cualquier aclaración sobre estos Términos o para ejercer sus derechos, por favor contáctenos.</p>
+        
+        <div class="flex flex-col sm:flex-row justify-center items-center gap-4">
+            <a href="mailto:karmindco@gmail.com" class="inline-flex items-center justify-center px-8 py-3 text-base font-medium rounded-lg text-white bg-red-600 hover:bg-red-700 transition-colors duration-300 shadow-lg shadow-red-500/50">
+                <i class="fa-solid fa-envelope mr-2"></i> Contacto Legal
+            </a>
+            
+        </div>
+    </div>
+</section>
+
+{% endblock %}
