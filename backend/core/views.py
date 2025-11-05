@@ -2,9 +2,11 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from django.utils import timezone
-from django.views.generic import TemplateView
-from .models import Configuracion
 
+from django.views.generic import TemplateView, FormView 
+from django.urls import reverse_lazy 
+from .models import Configuracion, Contacto 
+from .forms import ContactoForm 
 
 # ============================================================
 # 🔗 MIXIN: Lógica Reutilizable para el Logotipo
@@ -133,6 +135,59 @@ class AcercaDeView(LogoContextMixin, TemplateView):
     Hereda de LogoContextMixin para inyectar el logo.
     """
     template_name = 'core/acerca_de.html'
+
+
+# ============================================================
+# ✉️ PÁGINA DE CONTACTO (NUEVA VISTA)
+# ============================================================
+class ContactoView(LogoContextMixin, FormView):
+    """
+    Renderiza la página de contacto y procesa el envío del formulario.
+    
+    - GET: Muestra la plantilla con un formulario vacío.
+    - POST: Valida los datos. Si son válidos, guarda la solicitud
+      en el modelo Contacto y muestra un mensaje de éxito.
+    """
+    template_name = 'core/contacto.html'
+    form_class = ContactoForm
+    success_url = reverse_lazy('core:contacto') # Redirige a la misma pág. de contacto
+
+    def form_valid(self, form):
+        """
+        Se ejecuta cuando el formulario (POST) es válido.
+        Guarda la instancia de Contacto en la BD.
+        """
+        try:
+            # Guardamos el objeto Contacto en la base de datos
+            # El estado 'PENDIENTE' se asigna automáticamente en el clean() del modelo
+            form.save()
+            
+            # Mensaje de éxito para el usuario
+            messages.success(
+                self.request,
+                '¡Mensaje recibido! Gracias por contactarnos. Nuestro equipo revisará tu solicitud y te responderá pronto.'
+            )
+            
+        except Exception as e:
+            # Manejo de errores si falla el guardado (p.ej. BD)
+            messages.error(
+                self.request,
+                f'Hubo un error inesperado al procesar tu solicitud: {e}. Por favor, inténtalo de nuevo.'
+            )
+            print(f"Error al guardar Contacto: {e}")
+
+        return super().form_valid(form)
+
+    def form_invalid(self, form):
+        """
+        Se ejecuta cuando el formulario (POST) es inválido.
+        """
+        # Mensaje de error genérico. Los errores específicos se mostrarán en cada campo.
+        messages.error(
+            self.request,
+            'No fue posible enviar tu solicitud. Por favor, revisa los campos marcados en rojo.'
+        )
+        return super().form_invalid(form)
 
 def login_view(request):
     """

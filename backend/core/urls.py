@@ -15,6 +15,8 @@ urlpatterns = [
     path('ptdp', views.PtdpView.as_view(), name='ptdp'),
     path('terminos-servicio', views.TerminosServicioView.as_view(), name='terminos_servicio'),
     path('acerca-de', views.AcercaDeView.as_view(), name='acerca_de'),
+    path('contacto', views.ContactoView.as_view(), name='contacto'),
+
     path('login/', views.login_view, name='login'),
     path('logout/', views.logout_view, name='logout'),
 ]
