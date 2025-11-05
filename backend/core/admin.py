@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Departamento, Ciudad, Barrio, Empresa, Sede, Rol, User, Configuracion, Servicio, EstadoContacto
+from .models import Departamento, Ciudad, Barrio, Empresa, Sede, Rol, User, Configuracion, Servicio, EstadoContacto, Contacto
 from import_export import resources
 from django.utils.html import format_html
 from import_export.admin import ImportExportModelAdmin
@@ -418,3 +418,58 @@ class EstadoContactoAdmin(admin.ModelAdmin):
             )
         }),
     )
+
+
+# =====================================================
+# 🗂️ Administración: Contacto
+# =====================================================
+# Configuración del panel de administración para gestionar
+# las solicitudes de contacto recibidas.
+# =====================================================
+
+@admin.register(Contacto)
+class ContactoAdmin(admin.ModelAdmin):
+    """
+    Panel administrativo para la gestión de Contactos.
+    Permite visualizar datos clave, filtrar por estado/servicio
+    y actualizar el registro (incluyendo asignar 'actualizado_por').
+    """
+
+    # Columnas en la vista de lista
+    list_display = (
+        'id',
+        'nombres',
+        'apellidos',
+        'correo',
+        'telefono',
+        'servicio',
+        'estado',
+        'fecha_creacion',
+        'is_active'
+    )
+
+    list_filter = ('estado', 'servicio', 'fecha_creacion', 'is_active')
+    search_fields = ('nombres', 'apellidos', 'correo', 'telefono', 'descripcion')
+    readonly_fields = ('fecha_creacion', 'fecha_actualizacion')
+
+    fieldsets = (
+        ("Información del remitente", {
+            "fields": ("nombres", "apellidos", "correo", "telefono")
+        }),
+        ("Solicitud", {
+            "fields": ("servicio", "descripcion", "acepta_politica", "estado")
+        }),
+        ("Auditoría", {
+            "fields": ("actualizado_por", "fecha_creacion", "fecha_actualizacion", "is_active")
+        }),
+    )
+
+    # Al guardar desde el admin, si se desea podemos automatizar que el usuario logueado
+    # quede registrado en 'actualizado_por' (opcional). A continuación se implementa.
+    def save_model(self, request, obj, form, change):
+        """
+        Sobrescribe el guardado para asignar 'actualizado_por' con el usuario actual del admin.
+        """
+        if request.user and request.user.is_authenticated:
+            obj.actualizado_por = request.user
+        super().save_model(request, obj, form, change)
