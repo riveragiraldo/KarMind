@@ -1,12 +1,10 @@
 from django.contrib import admin
-from .models import Departamento, Ciudad, Barrio, Empresa, Sede, Rol, User, Configuracion
+from .models import Departamento, Ciudad, Barrio, Empresa, Sede, Rol, User, Configuracion, Servicio, EstadoContacto
 from import_export import resources
 from django.utils.html import format_html
 from import_export.admin import ImportExportModelAdmin
 from django.contrib.auth import get_user_model
 User = get_user_model()
-
-
 
 
 
@@ -337,3 +335,86 @@ class ConfiguracionAdmin(admin.ModelAdmin):
     ordering = ('-fecha_creacion',)
     list_filter = ('is_active',)
     search_fields = ('periodo_pago', 'periodo_revision')
+
+
+# =====================================================
+# 🗂️ Administración de Servicios
+# =====================================================
+# Configura la visualización del modelo Servicio dentro
+# del panel administrativo de Django.
+# =====================================================
+
+
+@admin.register(Servicio)
+class ServicioAdmin(admin.ModelAdmin):
+    """
+    🎛️ Panel administrativo para la gestión de servicios.
+    Permite visualizar y administrar los distintos servicios
+    registrados en la plataforma.
+    """
+
+    list_display = (
+        'id',
+        'nombre',
+        'is_active',
+        'fecha_creacion',
+        'fecha_actualizacion',
+    )
+
+    search_fields = ('nombre',)
+    list_filter = ('is_active',)
+    readonly_fields = ('fecha_creacion', 'fecha_actualizacion')
+
+    # ----------------------------------------------------------
+    # 📋 Organización de campos en el formulario de edición
+    # ----------------------------------------------------------
+    fieldsets = (
+        ("Información del servicio", {
+            "fields": ("nombre",)
+        }),
+        ("Auditoría", {
+            "fields": (
+                "creado_por",
+                "actualizado_por",
+                "fecha_creacion",
+                "fecha_actualizacion",
+                "is_active",
+            )
+        }),
+    )
+
+# =====================================================
+# 🗂️ Administración de Estados de Servicio
+# =====================================================
+# Configura la visualización y gestión de los estados
+# posibles en el panel administrativo de Django.
+# =====================================================
+
+
+
+@admin.register(EstadoContacto)
+class EstadoContactoAdmin(admin.ModelAdmin):
+    """
+    🎛️ Panel administrativo para la gestión de estados de servicio.
+    Permite crear, editar y visualizar los estados disponibles
+    en el sistema KarMind.
+    """
+
+    list_display = ('id', 'nombre', 'color_hex', 'is_active', 'fecha_creacion')
+    search_fields = ('nombre', 'descripcion')
+    list_filter = ('is_active',)
+    readonly_fields = ('fecha_creacion', 'fecha_actualizacion')
+
+    fieldsets = (
+        ("Información del estado", {
+            "fields": ("nombre", "descripcion", "color_hex", "is_active")
+        }),
+        ("Auditoría", {
+            "fields": (
+                "creado_por",
+                "actualizado_por",
+                "fecha_creacion",
+                "fecha_actualizacion",
+            )
+        }),
+    )

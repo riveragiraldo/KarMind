@@ -448,4 +448,100 @@ class Configuracion(BaseModel):
         """
         return os.path.basename(self.logo.name) if self.logo else None
 
+# ==============================================================
+# 📦 MODELO: Servicio
+# ==============================================================
+# Este modelo representa los distintos tipos de servicios que 
+# KarMind ofrece. Cada servicio tiene un nombre único, con una 
+# longitud máxima de 25 caracteres. Hereda de BaseModel para 
+# conservar trazabilidad (fechas, usuarios y estado activo).
+# ==============================================================
 
+
+# --------------------------------------------------------------
+# 🧱 MODELO: Servicio
+# --------------------------------------------------------------
+class Servicio(BaseModel):
+    """
+    Define los servicios que ofrece la plataforma KarMind.
+    Cada registro corresponde a un tipo de servicio único.
+    """
+
+    nombre = models.CharField(
+        "Nombre del servicio",
+        max_length=25,
+        unique=True,
+        help_text="Nombre corto y descriptivo del servicio (máx. 25 caracteres)."
+    )
+
+    # ----------------------------------------------------------
+    # 🔧 CONFIGURACIÓN DEL MODELO
+    # ----------------------------------------------------------
+    class Meta:
+        verbose_name = "Servicio"
+        verbose_name_plural = "Servicios"
+        ordering = ['nombre']
+
+    # ----------------------------------------------------------
+    # 📘 REPRESENTACIÓN LEGIBLE
+    # ----------------------------------------------------------
+    def __str__(self):
+        """
+        Retorna una representación legible del servicio.
+        """
+        return self.nombre
+# ==============================================================
+# 📦 MODELO: EstadoServicio
+# ==============================================================
+# Este modelo define los diferentes estados posibles que puede
+# tener una solicitud o servicio dentro del sistema KarMind.
+# Permite gestionar dinámicamente los estados desde el panel
+# administrativo sin requerir cambios en el código fuente.
+# ==============================================================
+
+
+# --------------------------------------------------------------
+# 🧱 MODELO: EstadoServicio
+# --------------------------------------------------------------
+class EstadoContacto(BaseModel):
+    """
+    Representa un estado que puede asignarse a un servicio o
+    solicitud de contacto (por ejemplo: Pendiente, En proceso, Respondido).
+    """
+
+    nombre = models.CharField(
+        "Nombre del estado",
+        max_length=30,
+        unique=True,
+        help_text="Nombre del estado (por ejemplo: Pendiente, En proceso, Respondido)."
+    )
+
+    descripcion = models.TextField(
+        "Descripción",
+        blank=True,
+        help_text="Descripción opcional del propósito o uso de este estado."
+    )
+
+    color_hex = models.CharField(
+        "Color representativo (HEX)",
+        max_length=7,
+        default="#6c757d",
+        help_text="Color representativo en formato HEX (ejemplo: #28a745 para verde)."
+    )
+
+    # ----------------------------------------------------------
+    # 🔧 CONFIGURACIÓN DEL MODELO
+    # ----------------------------------------------------------
+    class Meta:
+        verbose_name = "Estado de Contacto"
+        verbose_name_plural = "Estados de Contacto"
+        ordering = ['nombre']
+
+    # ----------------------------------------------------------
+    # 📘 REPRESENTACIÓN LEGIBLE
+    # ----------------------------------------------------------
+    def __str__(self):
+        """
+        Retorna una representación legible del estado.
+        """
+        return self.nombre
