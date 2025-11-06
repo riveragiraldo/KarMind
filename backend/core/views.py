@@ -8,6 +8,9 @@ from django.urls import reverse_lazy
 from .models import Configuracion, Contacto 
 from .forms import ContactoForm 
 
+from core.utils import enviar_correos_contacto
+
+
 # ============================================================
 # 🔗 MIXIN: Lógica Reutilizable para el Logotipo
 # ============================================================
@@ -138,56 +141,68 @@ class AcercaDeView(LogoContextMixin, TemplateView):
 
 
 # ============================================================
-# ✉️ PÁGINA DE CONTACTO (NUEVA VISTA)
+# ✉️ PÁGINA DE CONTACTO (VISTA MEJORADA)
 # ============================================================
 class ContactoView(LogoContextMixin, FormView):
     """
     Renderiza la página de contacto y procesa el envío del formulario.
-    
-    - GET: Muestra la plantilla con un formulario vacío.
-    - POST: Valida los datos. Si son válidos, guarda la solicitud
-      en el modelo Contacto y muestra un mensaje de éxito.
     """
     template_name = 'core/contacto.html'
     form_class = ContactoForm
-    success_url = reverse_lazy('core:contacto') # Redirige a la misma pág. de contacto
+    success_url = reverse_lazy('core:contacto')
 
     def form_valid(self, form):
         """
-        Se ejecuta cuando el formulario (POST) es válido.
-        Guarda la instancia de Contacto en la BD.
+        Guarda la instancia de Contacto y llama a la función para ensamblar los datos del correo.
         """
+        contacto_instance = None
+        
         try:
-            # Guardamos el objeto Contacto en la base de datos
-            # El estado 'PENDIENTE' se asigna automáticamente en el clean() del modelo
-            form.save()
+            # 1. Guardamos el objeto Contacto en la base de datos (CRÍTICO)
+            contacto_instance = form.save()
             
-            # Mensaje de éxito para el usuario
-            messages.success(
-                self.request,
-                '¡Mensaje recibido! Gracias por contactarnos. Nuestro equipo revisará tu solicitud y te responderá pronto.'
-            )
+            # Enviar los correos
+            correos_enviados = enviar_correos_contacto(contacto_instance)
+            
+            
+            
+            if correos_enviados:
+                messages.success(
+                    self.request,
+                    '¡Mensaje recibido! Gracias por contactarnos. '
+                    'Nuestro equipo revisará tu solicitud y te responderá pronto.'
+                )
+            else:
+                messages.warning(
+                    self.request,
+                    'Tu solicitud fue registrada, pero no se pudo enviar la notificación por correo. '
+                    'Nuestro equipo la revisará igualmente.'
+                )
             
         except Exception as e:
-            # Manejo de errores si falla el guardado (p.ej. BD)
+            # Este bloque captura fallos críticos (ej. error de base de datos)
             messages.error(
                 self.request,
-                f'Hubo un error inesperado al procesar tu solicitud: {e}. Por favor, inténtalo de nuevo.'
+                f'Hubo un error CRÍTICO al guardar tu solicitud. Por favor, inténtalo de nuevo más tarde.'
             )
-            print(f"Error al guardar Contacto: {e}")
+            print(f"Error CRÍTICO al guardar Contacto en la BD o al ensamblar el correo: {e}") 
+            return super().form_invalid(form) # Regresamos al formulario con errores
 
         return super().form_valid(form)
 
     def form_invalid(self, form):
         """
-        Se ejecuta cuando el formulario (POST) es inválido.
+        Se ejecuta cuando el formulario (POST) es inválido (incluyendo fallo de reCAPTCHA).
         """
-        # Mensaje de error genérico. Los errores específicos se mostrarán en cada campo.
         messages.error(
             self.request,
-            'No fue posible enviar tu solicitud. Por favor, revisa los campos marcados en rojo.'
+            'No fue posible enviar tu solicitud. Por favor, revisa los campos marcados en rojo, y verifica si la casilla de reCAPTCHA está marcada correctamente o inténtalo de nuevo si hubo un tiempo de espera.'
         )
         return super().form_invalid(form)
+    
+
+
+
 
 def login_view(request):
     """

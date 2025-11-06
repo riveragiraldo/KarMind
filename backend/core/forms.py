@@ -3,10 +3,15 @@ from django.utils.translation import gettext_lazy as _
 from django.urls import reverse
 from .models import Contacto, Servicio
 
+# 1. Importar el campo de reCAPTCHA
+
+from django_recaptcha.fields import ReCaptchaField
+from django_recaptcha.widgets import ReCaptchaV2Checkbox
+
 class ContactoForm(forms.ModelForm):
     """
     Formulario basado en el modelo Contacto, optimizado para Tailwind CSS
-    y con validaciones de frontend.
+    y protegido por Google reCAPTCHA v2.
     """
 
     # Clases de Tailwind para aplicar a todos los campos
@@ -30,6 +35,13 @@ class ContactoForm(forms.ModelForm):
             'class': 'h-5 w-5 text-blue-500 bg-gray-700 border-gray-600 rounded focus:ring-blue-600'
         })
     )
+    # -------------------------------------------------
+    # 🛡️ CAMPO reCAPTCHA (Anti-Bot)
+    # -------------------------------------------------
+    # Reemplazamos el Honeypot con el campo de reCAPTCHA
+    captcha = ReCaptchaField(widget=ReCaptchaV2Checkbox, label='') 
+    # -------------------------------------------------
+
 
     class Meta:
         model = Contacto

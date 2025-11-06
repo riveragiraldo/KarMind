@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>
+      
+        KarMind - Notificación
+      
+    </title>
+
+    <!-- Fuente Inter (si el cliente de correo lo soporta, si no, usa sans-serif) -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet" />
+
+    <!-- Estilos en línea para máxima compatibilidad -->
+    <style>
+      /* Tipografía Base y Reset CSS */
+      body,
+      table,
+      td,
+      a {
+        -webkit-text-size-adjust: 100%;
+        -ms-text-size-adjust: 100%;
+      }
+      table,
+      td {
+        mso-table-lspace: 0pt;
+        mso-table-rspace: 0pt;
+      }
+      img {
+        -ms-interpolation-mode: bicubic;
+      }
+      
+      /* Colores KarMind */
+      :root {
+        --color-kar-primary: #3b82f6; /* Azul */
+        --color-kar-accent: #10b981; /* Verde/Cian */
+        --color-kar-dark: #0f172a; /* Oscuro */
+      }
+      
+      /* Clases de utilidad para reuso (aunque deben ir inline) */
+      .kar-primary {
+        color: #3b82f6;
+      }
+      .kar-accent {
+        color: #10b981;
+      }
+      .button-primary {
+        background-color: #10b981;
+        border-radius: 8px;
+        color: #ffffff !important;
+        padding: 12px 24px;
+        font-weight: 600;
+        text-decoration: none;
+        display: inline-block;
+      }
+      
+      /* Responsive Styles */
+      @media screen and (max-width: 600px) {
+        .table-container {
+          width: 100% !important;
+          max-width: 100% !important;
+        }
+        .content-padding {
+          padding: 20px 15px !important;
+        }
+        .header-logo img {
+          height: 35px !important;
+        }
+      }
+    </style>
+  </head>
+
+  <body style="margin: 0; padding: 0; background-color: #f7f9fc; font-family: 'Inter', Arial, sans-serif;">
+    <!-- 1. Contenedor principal centrado -->
+    <center>
+      <table border="0" cellpadding="0" cellspacing="0" width="100%" style="border-collapse: collapse;">
+        <tr>
+          <td align="center" style="padding: 20px 0;">
+            <table border="0" cellpadding="0" cellspacing="0" class="table-container" width="600" style="border-collapse: collapse; max-width: 600px; background-color: #ffffff; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.05);">
+              <!-- 2. HEADER - Logo y Título -->
+              <tr>
+                <td align="center" style="padding: 30px 25px 20px 25px; border-bottom: 1px solid #e5e7eb;">
+                  <table border="0" cellpadding="0" cellspacing="0" width="100%">
+                    <tr>
+                      <!-- Logo KarMind (Si está disponible) -->
+                      <td align="left" class="header-logo">
+                        {% if logo_url %}
+                          <img src="{{ logo_url }}" alt="Logo KarMind" height="40" style="display: block; border: 0;" />
+                        {% endif %}
+                      </td>
+                      <!-- Título KarMind con colores de marca -->
+                      <td align="right" style="font-size: 24px; font-weight: 700; line-height: 28px; color: #0F172A;">
+                        <span style="color: #3B82F6;">Kar</span><span style="color: #10B981;">Mind</span>
+                      </td>
+                    </tr>
+                  </table>
+                </td>
+              </tr>
+
+              <!-- 3. CUERPO ESPECÍFICO DEL EMAIL (EL CONTENIDO VARIABLE) -->
+              <tr>
+                <td class="content-padding" style="padding: 30px 40px 30px 40px; color: #333333; font-size: 16px; line-height: 1.6;">
+                  <!-- BLOQUE PRINCIPAL: Aquí se inyecta el contenido de cada correo (admin o user) -->
+                  {# 'mensaje' ya contiene HTML seguro (renderizado), así que usamos |safe #}
+    {{ mensaje|safe }}
+                </td>
+              </tr>
+
+              <!-- 4. FOOTER -->
+              <tr>
+                <td align="center" style="padding: 20px 25px; background-color: #f7f9fc; border-top: 1px solid #e5e7eb; border-radius: 0 0 12px 12px;">
+                  <p style="font-size: 12px; color: #6b7280; margin: 0 0 5px 0;">KarMind - Gestión Inteligente</p>
+                  <p style="font-size: 10px; color: #9ca3af; margin: 0;">
+                    &copy;{% now 'Y' %}Todos los derechos reservados.
+                  </p>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+      </table>
+    </center>
+  </body>
+</html>

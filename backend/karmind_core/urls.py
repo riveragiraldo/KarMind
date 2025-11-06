@@ -31,6 +31,7 @@ urlpatterns = [
     # 🧠 Núcleo del sistema (Aplicación 'core')
     # -----------------------------------------------------------
     path('', include('core.urls')),  # Incluye las rutas de la app 'core'
+    # path('captcha',include('recaptcha.urls')),
 ]
 
 

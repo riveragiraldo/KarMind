@@ -238,16 +238,18 @@ class UserAdmin(ImportExportModelAdmin):
 # 🗂️ Administración de Configuración del Sistema KarMind
 # =====================================================
 # Este módulo define la interfaz administrativa del modelo
-# Configuración, permitiendo la gestión de parámetros globales
-# del sistema, la carga del documento PTDP y del logotipo institucional.
+# Configuración, permitiendo gestionar parámetros globales,
+# el documento PTDP, el logotipo institucional y el correo
+# administrativo del sistema.
 # =====================================================
+
 
 @admin.register(Configuracion)
 class ConfiguracionAdmin(admin.ModelAdmin):
     """
     🎛️ Panel administrativo para el modelo Configuración.
-    Permite gestionar los parámetros principales del sistema,
-    el documento PTDP y el logotipo institucional.
+    Permite administrar los parámetros principales del sistema,
+    visualizar el logo y descargar el documento PTDP.
     """
 
     # ------------------------------------------------------
@@ -257,6 +259,7 @@ class ConfiguracionAdmin(admin.ModelAdmin):
         'id',
         'periodo_pago',
         'periodo_revision',
+        'email_administrativo',
         'ptdp_link',
         'logo_preview',
         'fecha_creacion',
@@ -274,16 +277,9 @@ class ConfiguracionAdmin(admin.ModelAdmin):
     # 🔗 Enlace de descarga para el documento PTDP
     # ------------------------------------------------------
     def ptdp_link(self, obj):
-        """
-        Muestra un enlace descargable con el nombre del archivo PTDP.
-        Si no existe archivo, muestra 'Sin archivo'.
-        """
+        """Muestra un enlace descargable con el nombre del archivo PTDP."""
         if obj.ptdp:
-            return format_html(
-                '<a href="{}" download>{}</a>',
-                obj.ptdp.url,
-                obj.filename()
-            )
+            return format_html('<a href="{}" download>{}</a>', obj.ptdp.url, obj.filename())
         return "Sin archivo"
 
     ptdp_link.short_description = "PTDP"
@@ -292,10 +288,7 @@ class ConfiguracionAdmin(admin.ModelAdmin):
     # 🖼️ Vista previa del logo institucional
     # ------------------------------------------------------
     def logo_preview(self, obj):
-        """
-        Muestra una vista previa del logotipo institucional en miniatura.
-        Si no hay logo cargado, muestra 'Sin logo'.
-        """
+        """Muestra una vista previa del logotipo institucional."""
         if obj.logo:
             return format_html(
                 '<img src="{}" width="80" height="80" style="border-radius:8px; border:1px solid #ccc;"/>',
@@ -313,6 +306,7 @@ class ConfiguracionAdmin(admin.ModelAdmin):
             "fields": (
                 "periodo_pago",
                 "periodo_revision",
+                "email_administrativo",
                 "ptdp",
                 "logo",
                 "logo_preview",
@@ -334,7 +328,8 @@ class ConfiguracionAdmin(admin.ModelAdmin):
     # ------------------------------------------------------
     ordering = ('-fecha_creacion',)
     list_filter = ('is_active',)
-    search_fields = ('periodo_pago', 'periodo_revision')
+    search_fields = ('email_administrativo', 'periodo_pago', 'periodo_revision')
+
 
 
 # =====================================================

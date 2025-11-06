@@ -13,11 +13,13 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 from pathlib import Path
 import os
 from dotenv import load_dotenv
+from decouple import config
 load_dotenv()
 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+
 
 
 # Quick-start development settings - unsuitable for production
@@ -35,15 +37,21 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
-    'import_export',
+
+    # Apps de Django
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    
     # Apps locales
     'core',  # 👈 App principal del sitio
+
+    # Apps de terceros
+    'import_export',
+    'django_recaptcha',
 ]
 
 MIDDLEWARE = [
@@ -145,6 +153,34 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'frontend', 'media')
 AUTH_USER_MODEL = 'core.User'
+
+
+# -------------------------------------------------
+# 🛡️ CONFIGURACIÓN DE reCAPTCHA
+# -------------------------------------------------
+# Leemos las claves de forma segura desde el archivo .env
+
+RECAPTCHA_PUBLIC_KEY = os.getenv('RECAPTCHA_PUBLIC_KEY')
+RECAPTCHA_PRIVATE_KEY = os.getenv('RECAPTCHA_PRIVATE_KEY')
+
+# Configuración opcional pero recomendada para V2 Checkbox
+CAPTCHA_WIDGET_TEMPLATE = 'captcha/widgets/checkbox.html'
+
+# =================================================================
+# CONFIGURACIÓN DE CORREO ELECTRÓNICO (GMAIL SMTP SEGURO CON .ENV)
+# =================================================================
+
+# Usamos config() para leer las variables del .env
+EMAIL_HOST_USER = config('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD')
+
+# Configuración estándar para Gmail
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587 # Puerto estándar para TLS
+EMAIL_USE_TLS = True # Usa Transport Layer Security
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER 
+DEFAULT_RECIPIENT_EMAIL = config('DEFAULT_RECIPIENT_EMAIL')
 
 
 

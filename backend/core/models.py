@@ -289,10 +289,10 @@ class User(AbstractBaseUser, PermissionsMixin):
 # 📦 MODELO: Configuración del Sistema KarMind
 # ==============================================================
 # Este modelo almacena los parámetros generales del sistema,
-# como los períodos de pago y revisión, el documento PTDP en PDF
-# y el logotipo institucional. 
-# 
-# Hereda los campos definidos en BaseModel:
+# como los períodos de pago y revisión, el documento PTDP (PDF),
+# el logotipo institucional y el correo administrativo principal.
+#
+# Hereda los campos comunes de BaseModel:
 # - fecha_creacion
 # - fecha_actualizacion
 # - is_active
@@ -305,35 +305,27 @@ class User(AbstractBaseUser, PermissionsMixin):
 # 🧰 VALIDADORES PERSONALIZADOS
 # --------------------------------------------------------------
 def validar_tamano_pdf(archivo):
-    """
-    Valida que el archivo PDF no supere los 5 MB.
-    """
+    """Valida que el archivo PDF no supere los 5 MB."""
     max_size = 5 * 1024 * 1024  # 5 MB
     if archivo.size > max_size:
         raise ValidationError("El archivo no debe superar los 5 MB.")
 
 
 def validar_pdf(archivo):
-    """
-    Valida que el archivo tenga una extensión .pdf (no sensible a mayúsculas).
-    """
+    """Valida que el archivo tenga una extensión .pdf (no sensible a mayúsculas)."""
     if not archivo.name.lower().endswith('.pdf'):
         raise ValidationError("Solo se permiten archivos con formato PDF.")
 
 
 def validar_tamano_imagen(archivo):
-    """
-    Valida que el tamaño del archivo de imagen no supere los 5 MB.
-    """
+    """Valida que el tamaño del logo no supere los 5 MB."""
     max_size = 5 * 1024 * 1024  # 5 MB
     if archivo.size > max_size:
         raise ValidationError("El logo no debe superar los 5 MB.")
 
 
 def validar_logo_png(archivo):
-    """
-    Valida que el logo sea un archivo PNG cuadrado y válido.
-    """
+    """Valida que el logo sea una imagen PNG cuadrada y válida."""
     if not archivo.name.lower().endswith('.png'):
         raise ValidationError("El logo debe estar en formato PNG.")
 
@@ -350,8 +342,7 @@ def validar_logo_png(archivo):
 def ptdp_upload_path(instance, filename):
     """
     Define la ruta y el formato de nombre para el documento PTDP cargado.
-    El archivo se almacenará con el formato:
-    configuracion/PTDP_ddmmaaaahhmmss.pdf
+    Ejemplo: configuracion/PTDP_ddmmaaaahhmmss.pdf
     """
     timestamp = datetime.now().strftime("%d%m%Y%H%M%S")
     filename = f"PTDP_{timestamp}.pdf"
@@ -359,10 +350,7 @@ def ptdp_upload_path(instance, filename):
 
 
 def logo_upload_path(instance, filename):
-    """
-    Define la ruta y el nombre fijo para el logotipo institucional.
-    Siempre se almacenará como: configuracion/logo.png
-    """
+    """Define la ruta fija para almacenar el logotipo institucional."""
     return os.path.join("configuracion", "logo.png")
 
 
@@ -371,11 +359,9 @@ def logo_upload_path(instance, filename):
 # --------------------------------------------------------------
 class Configuracion(BaseModel):
     """
-    Representa los parámetros de configuración global del sistema KarMind.
-
-    Este modelo centraliza la gestión de información operativa y visual
-    del sistema, permitiendo ajustar períodos administrativos y mantener
-    recursos institucionales como el documento PTDP y el logotipo.
+    Representa los parámetros globales del sistema KarMind.
+    Centraliza valores administrativos y visuales ajustables
+    desde el panel de control institucional.
     """
 
     # ----------------------------------------------------------
@@ -391,6 +377,12 @@ class Configuracion(BaseModel):
         "Período de Revisión (días)",
         default=0,
         help_text="Valor entero positivo (incluye 0) que define el período de revisión en días."
+    )
+
+    email_administrativo = models.EmailField(
+        "Correo Administrativo",
+        default="karmindco@gmail.com",
+        help_text="Correo electrónico institucional utilizado para notificaciones administrativas."
     )
 
     # ----------------------------------------------------------
@@ -429,25 +421,20 @@ class Configuracion(BaseModel):
     # 📘 Representación Legible
     # ----------------------------------------------------------
     def __str__(self):
-        """
-        Devuelve una representación textual legible de la configuración.
-        """
+        """Retorna una descripción resumida de la configuración actual."""
         return f"Configuración (Pago: {self.periodo_pago} / Revisión: {self.periodo_revision})"
 
     # ----------------------------------------------------------
     # 📂 Métodos Utilitarios
     # ----------------------------------------------------------
     def filename(self):
-        """
-        Retorna el nombre del archivo PTDP, si existe.
-        """
+        """Retorna el nombre del archivo PTDP, si existe."""
         return os.path.basename(self.ptdp.name) if self.ptdp else None
 
     def logo_filename(self):
-        """
-        Retorna el nombre del archivo de logotipo, si existe.
-        """
+        """Retorna el nombre del archivo del logotipo, si existe."""
         return os.path.basename(self.logo.name) if self.logo else None
+
 
 # ==============================================================
 # 📦 MODELO: Servicio
