@@ -1,10 +1,27 @@
+# ============================================================
+# Configuración del panel de administración (admin.py)
+# Registra los modelos principales y personaliza su visualización.
+# ============================================================
+
+# Django core
 from django.contrib import admin
-from .models import Departamento, Ciudad, Barrio, Empresa, Sede, Rol, User, Configuracion, Servicio, EstadoContacto, Contacto
-from import_export import resources
 from django.utils.html import format_html
-from import_export.admin import ImportExportModelAdmin
 from django.contrib.auth import get_user_model
+
+# Terceros
+from import_export import resources
+from import_export.admin import ImportExportModelAdmin
+
+# Aplicación local
+from .models import (
+    Departamento, Ciudad, Barrio, Empresa, Sede,
+    Rol, User, Configuracion, Servicio,
+    EstadoContacto, Contacto
+)
+
+# Reasignación del modelo de usuario personalizado
 User = get_user_model()
+
 
 
 
@@ -419,18 +436,21 @@ class EstadoContactoAdmin(admin.ModelAdmin):
 # 🗂️ Administración: Contacto
 # =====================================================
 # Configuración del panel de administración para gestionar
-# las solicitudes de contacto recibidas.
+# las solicitudes de contacto recibidas desde la web.
 # =====================================================
+
 
 @admin.register(Contacto)
 class ContactoAdmin(admin.ModelAdmin):
     """
-    Panel administrativo para la gestión de Contactos.
-    Permite visualizar datos clave, filtrar por estado/servicio
-    y actualizar el registro (incluyendo asignar 'actualizado_por').
+    Panel administrativo para la gestión de contactos.
+    Permite visualizar información del remitente, detalles
+    de la solicitud, trazabilidad técnica y auditoría.
     """
 
-    # Columnas en la vista de lista
+    # -------------------------------------------------
+    # 🧩 Configuración general
+    # -------------------------------------------------
     list_display = (
         'id',
         'nombres',
@@ -440,31 +460,94 @@ class ContactoAdmin(admin.ModelAdmin):
         'servicio',
         'estado',
         'fecha_creacion',
-        'is_active'
+        'ip_autorizacion',
+        'user_agent',
+        'consentimiento_hash',
     )
 
-    list_filter = ('estado', 'servicio', 'fecha_creacion', 'is_active')
-    search_fields = ('nombres', 'apellidos', 'correo', 'telefono', 'descripcion')
-    readonly_fields = ('fecha_creacion', 'fecha_actualizacion')
+    list_filter = ('estado', 'servicio', 'fecha_creacion', 'is_active', 'cliente_potencial')
+    search_fields = ('nombres', 'apellidos', 'correo', 'telefono', 'descripcion', 'observaciones')
+    readonly_fields = (
+        'fecha_creacion',
+        'fecha_actualizacion',
+        'nombres',
+        'apellidos',
+        'correo',
+        'telefono',
+        'acepta_politica',
+        'ip_autorizacion',
+        'user_agent',
+        'fecha_autorizacion',
+        'consentimiento_hash',
+    )
+    ordering = ('-fecha_creacion',)
 
+    # -------------------------------------------------
+    # 🧾 Organización visual en secciones
+    # -------------------------------------------------
     fieldsets = (
-        ("Información del remitente", {
-            "fields": ("nombres", "apellidos", "correo", "telefono")
+        ("📧 Información del remitente", {
+            "fields": ("nombres", "apellidos", "correo", "telefono"),
+            "description": "Datos originales del remitente (no modificables)."
         }),
-        ("Solicitud", {
-            "fields": ("servicio", "descripcion", "acepta_politica", "estado")
+        ("📋 Detalle de la solicitud", {
+            "fields": ("servicio", "descripcion", "acepta_politica", "estado", "observaciones", "cliente_potencial"),
+            "description": "Información general sobre la solicitud y seguimiento."
         }),
-        ("Auditoría", {
-            "fields": ("actualizado_por", "fecha_creacion", "fecha_actualizacion", "is_active")
+        ("🔐 Evidencia técnica del consentimiento", {
+            "fields": ("ip_autorizacion", "user_agent", "fecha_autorizacion", "consentimiento_hash"),
+            "description": "Datos técnicos registrados automáticamente al aceptar la política de privacidad."
+        }),
+        ("🕓 Auditoría y control", {
+            "fields": ("actualizado_por", "fecha_creacion", "fecha_actualizacion", "is_active"),
+            "description": "Campos de control interno y trazabilidad de modificaciones."
         }),
     )
 
-    # Al guardar desde el admin, si se desea podemos automatizar que el usuario logueado
-    # quede registrado en 'actualizado_por' (opcional). A continuación se implementa.
+    # -------------------------------------------------
+    # ⚙️ Personalización del guardado
+    # -------------------------------------------------
     def save_model(self, request, obj, form, change):
         """
-        Sobrescribe el guardado para asignar 'actualizado_por' con el usuario actual del admin.
+        Asigna el usuario que actualiza el registro en el campo 'actualizado_por'.
         """
         if request.user and request.user.is_authenticated:
             obj.actualizado_por = request.user
         super().save_model(request, obj, form, change)
+
+    # -------------------------------------------------
+    # 🧱 Permisos de modificación y creación
+    # -------------------------------------------------
+    def has_add_permission(self, request):
+        """
+        Se desactiva la creación manual desde el admin.
+        Los contactos solo se generan desde el formulario público.
+        """
+        return False
+
+    def has_delete_permission(self, request, obj=None):
+        """
+        Solo los superusuarios pueden eliminar registros.
+        """
+        return request.user.is_superuser
+
+    def get_readonly_fields(self, request, obj=None):
+        """
+        Campos no editables en ningún caso.
+        """
+        readonly = list(self.readonly_fields)
+        # Si el objeto existe (modo edición)
+        if obj:
+            # Permitir edición solo de los campos administrativos
+            readonly.extend([
+                'servicio',
+                'descripcion',
+            ])
+        return readonly
+
+    def get_queryset(self, request):
+        """
+        Optimiza las consultas incluyendo las relaciones necesarias.
+        """
+        qs = super().get_queryset(request)
+        return qs.select_related('servicio', 'estado')

@@ -1,13 +1,31 @@
+# =====================================================
+# 📦 Importaciones generales del módulo de vistas (views.py)
+# =====================================================
+# Este archivo define las vistas del núcleo del sitio (core),
+# incluyendo la página de contacto, autenticación y utilidades
+# comunes como el manejo de correo y registros de usuario.
+# =====================================================
+
+# -----------------------------------------------------
+# 🧩 Librerías de Django
+# -----------------------------------------------------
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from django.utils import timezone
+from django.views.generic import TemplateView, FormView
+from django.urls import reverse_lazy
 
-from django.views.generic import TemplateView, FormView 
-from django.urls import reverse_lazy 
-from .models import Configuracion, Contacto 
-from .forms import ContactoForm 
+# -----------------------------------------------------
+# 🗂️ Modelos y Formularios internos
+# -----------------------------------------------------
+from .models import Configuracion, Contacto
+from .forms import ContactoForm
 
+# -----------------------------------------------------
+# ⚙️ Utilidades y librerías adicionales
+# -----------------------------------------------------
+import threading
 from core.utils import enviar_correos_contacto
 
 
@@ -139,13 +157,13 @@ class AcercaDeView(LogoContextMixin, TemplateView):
     """
     template_name = 'core/acerca_de.html'
 
-
 # ============================================================
-# ✉️ PÁGINA DE CONTACTO (VISTA MEJORADA)
+# 🌐 Página Contacto (Landing Page) 
 # ============================================================
 class ContactoView(LogoContextMixin, FormView):
     """
-    Renderiza la página de contacto y procesa el envío del formulario.
+    Renderiza la página de contacto, guarda la información del usuario
+    y registra evidencia técnica del consentimiento digital (IP, user_agent, fecha, hash).
     """
     template_name = 'core/contacto.html'
     form_class = ContactoForm
@@ -153,53 +171,79 @@ class ContactoView(LogoContextMixin, FormView):
 
     def form_valid(self, form):
         """
-        Guarda la instancia de Contacto y llama a la función para ensamblar los datos del correo.
+        Guarda la instancia de Contacto y lanza el envío de correos en un hilo separado.
         """
-        contacto_instance = None
-        
         try:
-            # 1. Guardamos el objeto Contacto en la base de datos (CRÍTICO)
-            contacto_instance = form.save()
-            
-            # Enviar los correos
-            correos_enviados = enviar_correos_contacto(contacto_instance)
-            
-            
-            
-            if correos_enviados:
-                messages.success(
-                    self.request,
-                    '¡Mensaje recibido! Gracias por contactarnos. '
-                    'Nuestro equipo revisará tu solicitud y te responderá pronto.'
-                )
-            else:
-                messages.warning(
-                    self.request,
-                    'Tu solicitud fue registrada, pero no se pudo enviar la notificación por correo. '
-                    'Nuestro equipo la revisará igualmente.'
-                )
-            
+            # ==========================================================
+            # 1️⃣ Crear instancia sin guardar aún para poder modificarla
+            # ==========================================================
+            contacto_instance = form.save(commit=False)
+
+            # Capturar IP del visitante
+            contacto_instance.ip_autorizacion = self.get_client_ip()
+
+            # Capturar información del navegador/dispositivo
+            contacto_instance.user_agent = self.request.META.get('HTTP_USER_AGENT', 'Desconocido')
+
+            # Registrar fecha de consentimiento (si no existe)
+            if not contacto_instance.fecha_autorizacion and contacto_instance.acepta_politica:
+                contacto_instance.fecha_autorizacion = timezone.now()
+
+            # Guardar finalmente en la base de datos (esto también genera el hash)
+            contacto_instance.save()
+
+            # ==========================================================
+            # 2️⃣ Enviar correos en segundo plano
+            # ==========================================================
+            correo_thread = threading.Thread(
+                target=enviar_correos_contacto,
+                args=(contacto_instance,),
+                daemon=True  # 🔹 para que no bloquee el cierre del servidor si algo queda pendiente
+            )
+            correo_thread.start()
+
+            # ==========================================================
+            # 3️⃣ Mensaje inmediato al usuario (sin esperar al envío)
+            # ==========================================================
+            messages.success(
+                self.request,
+                '¡Mensaje recibido! Gracias por contactarnos. '
+                'Nuestro equipo revisará tu solicitud y te responderá pronto.'
+            )
+
         except Exception as e:
-            # Este bloque captura fallos críticos (ej. error de base de datos)
+            # Capturamos cualquier fallo crítico (base de datos, correo, etc.)
             messages.error(
                 self.request,
-                f'Hubo un error CRÍTICO al guardar tu solicitud. Por favor, inténtalo de nuevo más tarde.'
+                'Hubo un error crítico al guardar tu solicitud. Por favor, inténtalo de nuevo más tarde.'
             )
-            print(f"Error CRÍTICO al guardar Contacto en la BD o al ensamblar el correo: {e}") 
-            return super().form_invalid(form) # Regresamos al formulario con errores
+            print(f"❌ Error al procesar solicitud de contacto: {e}")
+            return super().form_invalid(form)
 
         return super().form_valid(form)
 
+    def get_client_ip(self):
+        """
+        Obtiene la IP real del cliente, compatible con servidores detrás de proxy o Cloudflare.
+        """
+        request = self.request
+        ip = request.META.get('HTTP_X_FORWARDED_FOR')
+        if ip:
+            ip = ip.split(',')[0].strip()
+        else:
+            ip = request.META.get('REMOTE_ADDR', '0.0.0.0')
+        return ip
+
     def form_invalid(self, form):
         """
-        Se ejecuta cuando el formulario (POST) es inválido (incluyendo fallo de reCAPTCHA).
+        Se ejecuta cuando el formulario (POST) es inválido.
         """
         messages.error(
             self.request,
-            'No fue posible enviar tu solicitud. Por favor, revisa los campos marcados en rojo, y verifica si la casilla de reCAPTCHA está marcada correctamente o inténtalo de nuevo si hubo un tiempo de espera.'
+            'No fue posible enviar tu solicitud. Por favor, revisa los campos marcados en rojo '
+            'y verifica si el reCAPTCHA fue completado correctamente.'
         )
         return super().form_invalid(form)
-    
 
 
 

@@ -1,33 +1,78 @@
 {% extends 'core/base.html' %}
 {% load static %}
 
+{% comment %}
+=============================================================
+📄 TEMPLATE: acerca.html
+-------------------------------------------------------------
+📘 Descripción:
+    Página informativa "Acerca de" del sitio web de KarMind.
+    Presenta la filosofía de diseño, la arquitectura tecnológica
+    y el equipo responsable del desarrollo y mantenimiento del portal.
+
+🏗️ Renderizada por:
+    - Vista: TemplateView o similar (core/views.py)
+    - URL: /acerca/ (definida en urls.py dentro del módulo core)
+
+📦 Contexto esperado:
+    Este template no requiere variables dinámicas; todo su contenido
+    es estático e informativo.
+
+🎨 Hereda de:
+    core/base.html
+
+🧩 Bloques definidos:
+    - title → Define el título de la pestaña del navegador.
+    - content → Contiene toda la estructura visual de la página.
+
+🧠 Tecnologías visuales empleadas:
+    - Tailwind CSS para maquetación y diseño responsivo.
+    - Font Awesome para iconografía semántica.
+    - Efectos animados mediante clases utilitarias (blur, mix-blend, etc.).
+
+📅 Última actualización:
+    2025-11-05
+    Documentado por: Asistente técnico IA (KarMind Dev Support)
+=============================================================
+{% endcomment %}
+
+
+
 {% block title %}KarMind | Acerca de nuestro sitio web y tecnología{% endblock %}
 
 {% block content %}
 
-<!-- 1. HERO SECTION: Presentación del Sitio Web y Tecnología -->
-
+<!-- =========================================================
+     1️⃣ SECCIÓN HERO: Presentación principal del sitio web
+     ---------------------------------------------------------
+     Propósito:
+     - Introducir el objetivo del sitio y su trasfondo técnico.
+     - Incluir un fondo visual dinámico (efecto “blob” animado)
+       con los colores institucionales (azul y verde).
+========================================================= -->
 <section class="bg-gray-900 text-white min-h-[50vh] flex items-center overflow-hidden relative">
-    <!-- Fondo Animado Blob (Visual) - Usando los colores corporativos (Azul/Verde) -->
+
+    <!-- 🌈 Fondo Animado de Blobs (Efecto visual corporativo) -->
     <div class="absolute inset-0 z-0">
         <div class="absolute top-0 left-0 w-64 h-64 bg-green-600 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob"></div>
         <div class="absolute top-0 right-0 w-64 h-64 bg-blue-600 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-2000"></div>
     </div>
 
+    <!-- 📄 Contenido central del encabezado -->
     <div class="container mx-auto px-6 py-24 relative z-10">
         <div class="max-w-4xl mx-auto text-center">
             
-            <!-- Título Principal -->
+            <!-- 🏷️ Título principal -->
             <h1 class="text-5xl md:text-6xl font-extrabold mb-4 leading-tight">
                 <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-green-400">Acerca de este Sitio Web</span>
             </h1>
             
-            <!-- Subtítulo H2 (Filosofía Técnica) -->
+            <!-- ✨ Subtítulo filosófico -->
             <h2 class="text-2xl md:text-3xl mb-8 font-light text-gray-300">
                 El Diseño, la Tecnología y el Equipo detrás de <span class="font-bold text-white">KarMind Online.</span>
             </h2>
 
-            <!-- Propósito -->
+            <!-- 💡 Texto de propósito -->
             <p class="text-lg text-gray-400 max-w-3xl mx-auto">
                 Diseñado bajo la filosofía de Humanismo Tecnológico, nuestro sitio web es una demostración de la eficiencia y adaptabilidad que ofrecemos a las PYMES. Conozca su estructura y quién lo hizo posible.
             </p>
@@ -36,13 +81,24 @@
     </div>
 </section>
 
-<!-- 2. SECCIÓN: CONTENIDO DETALLADO - ARQUITECTURA DE ALTO RENDIMIENTO -->
-
+<!-- =========================================================
+     2️⃣ SECCIÓN PRINCIPAL: Arquitectura, filosofía y equipo
+     ---------------------------------------------------------
+     Contiene tres bloques:
+     1. Filosofía de diseño y experiencia de usuario.
+     2. Arquitectura tecnológica.
+     3. Créditos de desarrollo.
+========================================================= -->
 <section id="content" class="py-24 bg-gray-50">
     <div class="container mx-auto px-6 max-w-4xl">
         <div class="bg-white rounded-xl shadow-2xl p-8 md:p-12 space-y-10 text-gray-700 text-lg leading-relaxed">
 
-            <!-- 1. FILOSOFÍA Y REDISEÑO -->
+            <!-- ============================
+                 📘 1. Filosofía y Experiencia
+                 ----------------------------
+                 Explica la intención de diseño centrada en usabilidad,
+                 accesibilidad y diseño responsivo.
+            ============================ -->
             <div class="space-y-4">
                 <h3 class="text-3xl font-bold text-gray-900 border-b pb-2 flex items-center">
                     <i class="fa-solid fa-lightbulb text-blue-500 mr-3"></i> 1. Filosofía de Diseño y Experiencia de Usuario
@@ -55,7 +111,12 @@
                 </p>
             </div>
             
-            <!-- 2. ARQUITECTURA DE ALTO RENDIMIENTO Y ESTABILIDAD (Tecnologías Ocultas) -->
+            <!-- ============================
+                 ⚙️ 2. Arquitectura de alto rendimiento
+                 ----------------------------
+                 Describe la estructura técnica, tecnologías y principios
+                 de desarrollo empleados en el backend, frontend y base de datos.
+            ============================ -->
             <div class="space-y-4">
                 <h3 class="text-3xl font-bold text-gray-900 border-b pb-2 flex items-center">
                     <i class="fa-solid fa-code text-green-500 mr-3"></i> 2. Arquitectura de Alto Rendimiento
@@ -86,7 +147,11 @@
                 </ul>
             </div>
             
-            <!-- 3. CRÉDITOS Y DESARROLLO -->
+            <!-- ============================
+                 👥 3. Créditos de desarrollo
+                 ----------------------------
+                 Reconoce al equipo de KarMind y colaboradores externos.
+            ============================ -->
             <div class="space-y-4">
                 <h3 class="text-3xl font-bold text-gray-900 border-b pb-2 flex items-center">
                     <i class="fa-solid fa-users-gear text-orange-500 mr-3"></i> 3. Créditos y Desarrollo
@@ -95,6 +160,7 @@
                     Este portal fue desarrollado y es mantenido por el equipo de <b>Medios Digitales y Desarrollo de Producto de KarMind</b>, un grupo dedicado a aplicar nuestra filosofía de eficiencia y calidad en cada línea de código.
                 </p>
                 
+                <!-- 📋 Bloque informativo del equipo -->
                 <div class="p-4 bg-yellow-50 border-l-4 border-yellow-500 text-gray-800 rounded-md text-base">
                     <strong class="block mb-1">Equipo central de Desarrollo Web:</strong>
                     <ul class="list-none space-y-1 pl-0 text-sm">
@@ -115,13 +181,19 @@
     </div>
 </section>
 
-<!-- 3. SECCIÓN: LLAMADA A LA ACCIÓN FINAL Y CONEXIÓN -->
-
+<!-- =========================================================
+     3️⃣ SECCIÓN FINAL: Llamada a la acción (CTA)
+     ---------------------------------------------------------
+     Objetivo:
+     - Invitar al visitante a contactar con KarMind
+       o conocer más sobre la empresa.
+========================================================= -->
 <section class="py-16 bg-gray-900 text-white text-center">
     <div class="container mx-auto px-6">
         <h2 class="text-3xl font-bold mb-4">¿Interesado en nuestra tecnología?</h2>
         <p class="text-xl text-gray-400 mb-8">La misma calidad y enfoque que aplicamos a nuestro sitio, la aplicamos a sus soluciones empresariales.</p>
         
+        <!-- 🖱️ Botones de acción -->
         <div class="flex flex-col sm:flex-row justify-center items-center gap-4">
             <a href="#contacto" class="inline-flex items-center justify-center px-8 py-3 text-base font-medium rounded-lg text-white bg-blue-600 hover:bg-blue-700 transition-colors duration-300 shadow-lg shadow-blue-500/50">
                 <i class="fa-solid fa-handshake mr-2"></i> ¡Hablemos de su Proyecto!

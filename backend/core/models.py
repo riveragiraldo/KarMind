@@ -4,19 +4,29 @@
 =======================================================
 
 Este módulo agrupa los modelos de datos principales utilizados por la 
-aplicación KarMind. Su objetivo es definir estructuras coherentes y 
-escalables para representar las entidades y relaciones del sistema, 
+aplicación KarMind. Su propósito es definir estructuras coherentes y 
+escalables que representen las entidades y relaciones del sistema, 
 siguiendo estándares de diseño orientados a la trazabilidad, consistencia 
 y reutilización del código.
 """
 
+# =======================================================
+# 🧩 Importaciones principales
+# =======================================================
+
+# Django core
 from django.db import models
 from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.core.validators import RegexValidator, MaxLengthValidator
-from PIL import Image
 from django.utils import timezone
+
+# Librerías externas
+from PIL import Image
+
+# Librerías estándar de Python
 import os
+import hashlib
 from datetime import datetime
 
 
@@ -538,108 +548,82 @@ class EstadoContacto(BaseModel):
 # ==============================================================
 # 📦 MODELO: Contacto
 # ==============================================================
-# Este modelo almacena las solicitudes o mensajes enviados por
-# clientes/visitantes a través del formulario público.
-#
-# Características principales:
-# - No requiere usuario autenticado para su creación.
-# - Registra fecha de creación y actualización.
-# - Registra el usuario que realizó la última modificación
-#   (campo 'actualizado_por') para auditoría administrativa.
-# - Relaciona la solicitud con un Servicio y con un EstadoContacto.
-# - Valida consentimiento explícito de tratamiento de datos.
+# Versión actualizada con trazabilidad técnica del consentimiento
 # ==============================================================
-
 
 class Contacto(models.Model):
     """
     Representa una solicitud de contacto enviada desde el formulario público.
 
-    Campos:
-        fecha_creacion: Fecha y hora en que se creó la solicitud (auto).
-        nombres: Nombres del remitente (obligatorio, max 20).
-        apellidos: Apellidos del remitente (opcional, max 20).
-        telefono: Teléfono de contacto (obligatorio, validado).
-        correo: Correo electrónico del remitente (obligatorio).
-        servicio: FK a Servicio (obligatorio).
-        descripcion: Descripción de la solicitud (obligatorio, max 200).
-        acepta_politica: Bool indicando consentimiento (obligatorio, debe ser True).
-        estado: FK a EstadoContacto (obligatorio, si no se provee se intenta asignar 'PENDIENTE').
-        actualizado_por: Usuario que realizó la última modificación desde admin (nullable).
-        fecha_actualizacion: Fecha de la última modificación (auto).
+    Incluye trazabilidad técnica para demostrar el consentimiento expreso
+    de tratamiento de datos personales (Ley 1581 de 2012).
     """
 
     # -----------------------------
     # Campos principales
     # -----------------------------
-    fecha_creacion = models.DateTimeField(
-        auto_now_add=True,
-        help_text="Fecha y hora en que se recibió la solicitud."
-    )
-
-    nombres = models.CharField(
-        "Nombres",
-        max_length=20,
-        validators=[MaxLengthValidator(20)],
-        help_text="Nombres del remitente (máx. 20 caracteres)."
-    )
-
-    apellidos = models.CharField(
-        "Apellidos",
-        max_length=20,
-        blank=True,
-        validators=[MaxLengthValidator(20)],
-        help_text="Apellidos del remitente (opcional, máx. 20 caracteres)."
-    )
-
+    fecha_creacion = models.DateTimeField(auto_now_add=True)
+    nombres = models.CharField("Nombres", max_length=20, validators=[MaxLengthValidator(20)])
+    apellidos = models.CharField("Apellidos", max_length=20, blank=True, validators=[MaxLengthValidator(20)])
     telefono = models.CharField(
         "Teléfono",
         max_length=16,
-        validators=[
-            RegexValidator(r'^\+?\d{7,15}$',
-                           message="El teléfono debe contener entre 7 y 15 dígitos y puede incluir '+' para código país.")
-        ],
-        help_text="Número telefónico del remitente (incluya código país si aplica)."
+        validators=[RegexValidator(r'^\+?\d{7,15}$', message="Formato telefónico inválido.")]
     )
-
-    correo = models.EmailField(
-        "Correo electrónico",
-        help_text="Correo electrónico de contacto del remitente."
-    )
-
-    servicio = models.ForeignKey(
-        Servicio,
-        on_delete=models.PROTECT,
-        related_name='contactos',
-        verbose_name="Servicio solicitado",
-        help_text="Servicio sobre el cual se solicita información."
-    )
-
-    descripcion = models.CharField(
-        "Descripción de la solicitud",
-        max_length=200,
-        validators=[MaxLengthValidator(200)],
-        help_text="Detalle o descripción de la solicitud (máx. 200 caracteres)."
-    )
-
+    correo = models.EmailField("Correo electrónico")
+    servicio = models.ForeignKey(Servicio, on_delete=models.PROTECT, related_name='contactos')
+    descripcion = models.CharField("Descripción de la solicitud", max_length=200, validators=[MaxLengthValidator(200)])
     acepta_politica = models.BooleanField(
         "Acepta política de tratamiento de datos",
         default=False,
         help_text="El usuario debe aceptar la política de tratamiento de datos para enviar la solicitud."
     )
-
     estado = models.ForeignKey(
         EstadoContacto,
         on_delete=models.PROTECT,
         related_name='contactos',
         null=True,
         blank=True,
-        verbose_name="Estado de la solicitud",
-        help_text="Estado actual de la solicitud. Si no se especifica, se intentará asignar 'PENDIENTE'."
+        verbose_name="Estado de la solicitud"
+    )
+    
+    observaciones = models.TextField(blank=True, null=True, help_text="Observaciones del contacto o gestión realizada.")
+    cliente_potencial = models.BooleanField(default=False, help_text="Indica si el contacto es un cliente potencial.")
+
+
+    # -----------------------------
+    # 🔐 Evidencia técnica de consentimiento
+    # -----------------------------
+    ip_autorizacion = models.GenericIPAddressField(
+        "Dirección IP de autorización",
+        null=True,
+        blank=True,
+        help_text="IP desde la cual el usuario otorgó el consentimiento."
+    )
+
+    user_agent = models.CharField(
+        "Agente de usuario (navegador/dispositivo)",
+        max_length=300,
+        blank=True,
+        help_text="Información del navegador o dispositivo desde el cual se realizó el envío."
+    )
+
+    fecha_autorizacion = models.DateTimeField(
+        "Fecha y hora de autorización",
+        null=True,
+        blank=True,
+        help_text="Fecha exacta en que el usuario aceptó la política de datos."
+    )
+
+    consentimiento_hash = models.CharField(
+        "Huella digital del consentimiento (SHA256)",
+        max_length=64,
+        blank=True,
+        help_text="Hash único que acredita la integridad del consentimiento otorgado."
     )
 
     # -----------------------------
-    # Auditoría de modificaciones (no requerido para creación)
+    # Auditoría de modificaciones
     # -----------------------------
     actualizado_por = models.ForeignKey(
         settings.AUTH_USER_MODEL,
@@ -647,22 +631,14 @@ class Contacto(models.Model):
         null=True,
         blank=True,
         related_name='contactos_actualizados',
-        verbose_name="Usuario que modificó",
-        help_text="Usuario del sistema que realizó la última modificación."
+        verbose_name="Usuario que modificó"
     )
 
-    fecha_actualizacion = models.DateTimeField(
-        auto_now=True,
-        help_text="Fecha y hora de la última modificación del registro."
-    )
-
-    is_active = models.BooleanField(
-        default=True,
-        help_text="Indica si la solicitud está activa o fue archivada/eliminada lógicamente."
-    )
+    fecha_actualizacion = models.DateTimeField(auto_now=True)
+    is_active = models.BooleanField(default=True)
 
     # -----------------------------
-    # Metadatos del modelo
+    # Meta y representación
     # -----------------------------
     class Meta:
         verbose_name = "Contacto"
@@ -674,60 +650,56 @@ class Contacto(models.Model):
             models.Index(fields=['estado']),
         ]
 
-    # -----------------------------
-    # Representación legible
-    # -----------------------------
     def __str__(self):
         servicio_nombre = self.servicio.nombre if self.servicio else "—"
         return f"{self.nombres} {self.apellidos or ''}".strip() + f" — {servicio_nombre}"
 
     # -----------------------------
-    # Validación de modelo (se ejecuta en full_clean())
+    # Validación
     # -----------------------------
     def clean(self):
-        """
-        Realiza validaciones lógicas del modelo:
-        - Asegura que el consentimiento (acepta_politica) sea True.
-        - Si no se especificó estado, intenta asignar el EstadoContacto 'PENDIENTE'.
-        - Si no existe 'PENDIENTE', se lanza ValidationError indicando crear el estado.
-        """
         errors = {}
 
-        # 1) Consentimiento obligatorio
         if not self.acepta_politica:
             errors['acepta_politica'] = ValidationError(
                 "El envío requiere la aceptación de la política de tratamiento de datos."
             )
 
-        # 2) Estado: si no hay estado asignado, intentar obtener el estado 'PENDIENTE'
         if not self.estado:
-            try:
-                pendiente = EstadoContacto.objects.filter(nombre__iexact='PENDIENTE').first()
-                if pendiente:
-                    self.estado = pendiente
-                else:
-                    errors['estado'] = ValidationError(
-                        "No existe un estado 'PENDIENTE'. Por favor cree un EstadoContacto con nombre 'PENDIENTE'."
-                    )
-            except Exception as e:
-                # Si falla la consulta (p. ej., migraciones), añadimos error genérico
+            pendiente = EstadoContacto.objects.filter(nombre__iexact='PENDIENTE').first()
+            if pendiente:
+                self.estado = pendiente
+            else:
                 errors['estado'] = ValidationError(
-                    "No fue posible asignar el estado por defecto. Verifique que el modelo EstadoContacto exista."
+                    "Debe existir un estado 'PENDIENTE' para asignar por defecto."
                 )
 
         if errors:
             raise ValidationError(errors)
 
     # -----------------------------
-    # Save: asegurar la validación y comportamiento por defecto
+    # Save
     # -----------------------------
     def save(self, *args, **kwargs):
-        """
-        Antes de guardar:
-        - Ejecuta clean() para garantizar integridad (consentimiento y estado).
-        - Actualiza 'fecha_actualizacion' automáticamente (gestión de Django).
-        """
-        # Intentar validación completa del objeto
+        # Validar datos antes de guardar
         self.full_clean()
+
+        # Registrar fecha de autorización si aplica
+        if self.acepta_politica and not self.fecha_autorizacion:
+            self.fecha_autorizacion = timezone.now()
+
+        # Generar hash de consentimiento si aún no existe
+        if self.acepta_politica and not self.consentimiento_hash:
+            base_str = (
+                f"{self.nombres}"
+                f"{self.apellidos}"
+                f"{self.correo}"
+                f"{self.telefono or ''}"
+                f"{self.ip_autorizacion or ''}"
+                f"{self.fecha_autorizacion}"
+            )
+            self.consentimiento_hash = hashlib.sha256(base_str.encode()).hexdigest()
+
         super().save(*args, **kwargs)
+
 
