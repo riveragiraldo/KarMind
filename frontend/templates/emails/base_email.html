@@ -1,126 +1,119 @@
-<!DOCTYPE html>
-
-<html lang="es">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>
-      
-        KarMind - Notificación
-      
-    </title>
-
-    <!-- Fuente Inter (si el cliente de correo lo soporta, si no, usa sans-serif) -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet" />
-
-    <!-- Estilos en línea para máxima compatibilidad -->
-    <style>
-      /* Tipografía Base y Reset CSS */
-      body,
-      table,
-      td,
-      a {
-        -webkit-text-size-adjust: 100%;
-        -ms-text-size-adjust: 100%;
-      }
-      table,
-      td {
-        mso-table-lspace: 0pt;
-        mso-table-rspace: 0pt;
-      }
-      img {
-        -ms-interpolation-mode: bicubic;
-      }
-      
-      /* Colores KarMind */
-      :root {
-        --color-kar-primary: #3b82f6; /* Azul */
-        --color-kar-accent: #10b981; /* Verde/Cian */
-        --color-kar-dark: #0f172a; /* Oscuro */
-      }
-      
-      /* Clases de utilidad para reuso (aunque deben ir inline) */
-      .kar-primary {
-        color: #3b82f6;
-      }
-      .kar-accent {
-        color: #10b981;
-      }
-      .button-primary {
-        background-color: #10b981;
-        border-radius: 8px;
-        color: #ffffff !important;
-        padding: 12px 24px;
-        font-weight: 600;
-        text-decoration: none;
-        display: inline-block;
-      }
-      
-      /* Responsive Styles */
-      @media screen and (max-width: 600px) {
-        .table-container {
-          width: 100% !important;
-          max-width: 100% !important;
+{% load static %}
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>{% block title %}KarMind - Comunicación{% endblock %}</title>
+    
+    <!-- Tipografía Inter (aunque muchos clientes la ignoran, la ponemos como fallback) -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Estilos de Email: DEBEN SER INLINE y usar colores de marca -->
+    <style type="text/css">
+        /* Reset CSS general */
+        body { margin: 0; padding: 0; min-width: 100%; background-color: #0F172A; }
+        table { border-collapse: collapse; table-layout: fixed; }
+        a { color: #3B82F6; text-decoration: none; }
+        
+        /* Tipografía e identidad KarMind */
+        .kar-font { font-family: 'Inter', sans-serif; }
+        
+        /* Contenedor Principal (Cuerpo del Email) */
+        .kar-body { background-color: #0F172A; color: #E2E8F0; padding: 20px; }
+        
+        /* Contenedor de la Tarjeta (El contenido principal) */
+        .kar-card {
+            background-color: #1E293B; /* Fondo interior más claro que el body */
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+            border: 1px solid #334155;
         }
-        .content-padding {
-          padding: 20px 15px !important;
+
+        /* Títulos */
+        .kar-h1 { color: #E2E8F0; font-size: 24px; font-weight: 700; margin: 0; padding: 0; }
+        .kar-h2 { color: #94A3B8; font-size: 18px; font-weight: 600; margin: 0; padding: 0; }
+
+        /* Párrafos */
+        .kar-p { color: #94A3B8; font-size: 15px; line-height: 1.6; margin: 0 0 16px 0; }
+
+        /* Botón de Acento (Verde/Cian) */
+        .kar-btn-accent {
+            background-color: #10B981; /* kar-accent */
+            border-radius: 8px;
+            color: #1F2937; /* Texto oscuro sobre el acento */
+            display: inline-block;
+            font-size: 16px;
+            font-weight: 700;
+            padding: 12px 24px;
+            text-align: center;
+            text-decoration: none;
+            box-shadow: 0 2px 4px rgba(16, 185, 129, 0.4);
         }
-        .header-logo img {
-          height: 35px !important;
-        }
-      }
+        
+        /* Enlaces de Texto */
+        .kar-link { color: #3B82F6; text-decoration: none; font-weight: 600; }
+
+        /* Footer y texto legal */
+        .kar-footer { color: #475569; font-size: 12px; line-height: 1.5; text-align: center; }
+        .kar-footer a { color: #475569; text-decoration: underline; }
+
+        /* Estilo para los datos de contacto/meta */
+        .kar-data-label { color: #94A3B8; font-weight: 600; }
+        .kar-data-value { color: #E2E8F0; font-weight: 400; }
+
     </style>
-  </head>
+</head>
+<body class="kar-body" style="background-color: #0F172A; margin: 0; padding: 0; min-width: 100%;">
+    <center class="kar-font" style="width: 100%;">
+        <div style="max-width: 600px; margin: auto;">
 
-  <body style="margin: 0; padding: 0; background-color: #f7f9fc; font-family: 'Inter', Arial, sans-serif;">
-    <!-- 1. Contenedor principal centrado -->
-    <center>
-      <table border="0" cellpadding="0" cellspacing="0" width="100%" style="border-collapse: collapse;">
-        <tr>
-          <td align="center" style="padding: 20px 0;">
-            <table border="0" cellpadding="0" cellspacing="0" class="table-container" width="600" style="border-collapse: collapse; max-width: 600px; background-color: #ffffff; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.05);">
-              <!-- 2. HEADER - Logo y Título -->
-              <tr>
-                <td align="center" style="padding: 30px 25px 20px 25px; border-bottom: 1px solid #e5e7eb;">
-                  <table border="0" cellpadding="0" cellspacing="0" width="100%">
-                    <tr>
-                      <!-- Logo KarMind (Si está disponible) -->
-                      <td align="left" class="header-logo">
-                        {% if logo_url %}
-                          <img src="{{ logo_url }}" alt="Logo KarMind" height="40" style="display: block; border: 0;" />
-                        {% endif %}
-                      </td>
-                      <!-- Título KarMind con colores de marca -->
-                      <td align="right" style="font-size: 24px; font-weight: 700; line-height: 28px; color: #0F172A;">
-                        <span style="color: #3B82F6;">Kar</span><span style="color: #10B981;">Mind</span>
-                      </td>
-                    </tr>
-                  </table>
-                </td>
-              </tr>
+            <!-- PRE HEADER (Oculto) -->
+            <div style="font-size: 1px; color: #0F172A; line-height: 1px; max-height: 0px; max-width: 0px; opacity: 0; overflow: hidden;">
+                {% block preheader %}{% endblock %}
+            </div>
 
-              <!-- 3. CUERPO ESPECÍFICO DEL EMAIL (EL CONTENIDO VARIABLE) -->
-              <tr>
-                <td class="content-padding" style="padding: 30px 40px 30px 40px; color: #333333; font-size: 16px; line-height: 1.6;">
-                  <!-- BLOQUE PRINCIPAL: Aquí se inyecta el contenido de cada correo (admin o user) -->
-                  {# 'mensaje' ya contiene HTML seguro (renderizado), así que usamos |safe #}
-    {{ mensaje|safe }}
-                </td>
-              </tr>
+            <!-- TABLA PRINCIPAL DEL EMAIL (CENTRAL CARD) -->
+            <table cellpadding="0" cellspacing="0" border="0" width="100%" class="kar-card" style="background-color: #1E293B; border-radius: 12px; border: 1px solid #334155;">
+                
+                <!-- HEADER (Logo y Nombre) -->
+                <tr>
+                    <td class="kar-card-padding" style="padding: 24px 24px 16px 24px; border-bottom: 1px solid #334155;">
+                        <table width="100%" cellpadding="0" cellspacing="0" border="0">
+                            <tr>
+                                <td style="text-align: left;">
+                                    <span class="kar-h1" style="font-family: 'Inter', sans-serif; color: #E2E8F0; font-size: 24px; font-weight: 800;">
+                                        <span style="color: #3B82F6;">Kar</span><span style="color: #10B981;">Mind</span>
+                                    </span>
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
 
-              <!-- 4. FOOTER -->
-              <tr>
-                <td align="center" style="padding: 20px 25px; background-color: #f7f9fc; border-top: 1px solid #e5e7eb; border-radius: 0 0 12px 12px;">
-                  <p style="font-size: 12px; color: #6b7280; margin: 0 0 5px 0;">KarMind - Gestión Inteligente</p>
-                  <p style="font-size: 10px; color: #9ca3af; margin: 0;">
-                    &copy;{% now 'Y' %}Todos los derechos reservados.
-                  </p>
-                </td>
-              </tr>
+                <!-- CONTENIDO DINÁMICO (MENSAJE) -->
+                <tr>
+                    <td style="padding: 24px; word-break: break-word;" class="kar-font">
+                        {{ mensaje|safe }}
+                    </td>
+                </tr>
             </table>
-          </td>
-        </tr>
-      </table>
+
+            <!-- FOOTER LEGAL -->
+            <table cellpadding="0" cellspacing="0" border="0" width="100%" style="margin-top: 20px;">
+                <tr>
+                    <td class="kar-footer" style="padding: 0 20px;">
+                        <p style="color: #475569; font-size: 12px; line-height: 1.5; margin: 0 0 8px 0;">
+                            Este es un mensaje automatizado de KarMind.
+                            <br>
+                            Derechos Reservados © {% now "Y" %} | <a href="#" style="color: #475569;">Política de Datos</a>
+                        </p>
+                        {% block legal_hash %}{% endblock %}
+                    </td>
+                </tr>
+            </table>
+
+        </div>
     </center>
-  </body>
+</body>
 </html>

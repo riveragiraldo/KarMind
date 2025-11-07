@@ -157,6 +157,15 @@ class AcercaDeView(LogoContextMixin, TemplateView):
     """
     template_name = 'core/acerca_de.html'
 
+
+
+
+# -----------------------------------------------------
+# ⚙️ Utilidades y librerías adicionales
+# -----------------------------------------------------
+import threading
+from core.utils import enviar_correos_contacto
+
 # ============================================================
 # 🌐 Página Contacto (Landing Page) 
 # ============================================================
