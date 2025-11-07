@@ -1,93 +1,118 @@
-<!DOCTYPE html>
 {% load static %}
+<!DOCTYPE html>
+
+<!-- ==============================================================
+🧠 BASE.HTML — PLANTILLA PRINCIPAL DEL SITIO KARMiND
+===============================================================
+Esta plantilla define la estructura base de todas las páginas del sistema.
+Incluye:
+- Cabecera (head) con scripts, estilos y favicon dinámico.
+- Loader animado durante la carga inicial.
+- Encabezado (header) con navegación adaptativa.
+- Contenedor principal para contenido dinámico " block content ".
+- Pie de página institucional con secciones informativas y legales.
+
+📌 Todas las páginas heredan de esta plantilla mediante:
+    "extends 'core/base.html"
+================================================================ -->
 <html lang="es">
 <head>
+    <!-- =====================================
+    🎨 METADATOS Y CONFIGURACIÓN GLOBAL
+    Define codificación, viewport y título dinámico.
+    ====================================== -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}KarMind - Gestión Inteligente{% endblock %}</title>
     
-    <!-- Alpine.js para interactividad (Menú móvil, Loader) -->
+    <!-- =====================================
+    🚀 LIBRERÍAS EXTERNAS
+    Incluye Alpine.js (interactividad) y TailwindCSS (estilos utilitarios).
+    ====================================== -->
     <script src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
-    <!-- Tailwind CSS (CDN) -->
     <script src="https://cdn.tailwindcss.com"></script>
     
-    <!-- Tipografía Inter -->
+    <!-- Tipografía base: Inter (Google Fonts) -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     
-    <!-- Font Awesome (Iconografía) -->
+    <!-- Iconografía: Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
 
-    <!-- 1. CAMBIO: CONFIGURACIÓN DEL FAVICON (ICONO DE LA PESTAÑA) -->
+    <!-- =====================================
+    🧩 FAVICON (ICONO DE LA PESTAÑA)
+    Soporta logo dinámico configurado en base de datos o fallback estático.
+    ====================================== -->
     {% if logo_url %}
         <link rel="icon" href="{{ logo_url }}" type="image/png">
     {% else %}
-        <!-- Fallback si no hay logo dinámico (ej: si se usa un logo estático por defecto) -->
-        <!-- Se asume un archivo favicon.ico o .png en /static/core/ -->
         <link rel="icon" href="{% static 'core/favicon.png' %}" type="image/png">
     {% endif %}
 
+    <!-- =====================================
+    🎨 ESTILOS INTERNOS PERSONALIZADOS
+    Incluye:
+    - Tipografía global
+    - Variables de color
+    - Loader animado
+    - Animaciones de fondo tipo “blob”
+    ====================================== -->
     <style>
         /* Tipografía Base */
         body { font-family: 'Inter', sans-serif; }
 
-        /* Variables de Color (Para consistencia y fácil cambio) */
+        /* Variables de Color (Consistencia visual global) */
         :root {
-            --kar-primary: #3B82F6; /* Azul */
-            --kar-accent: #10B981; /* Verde/Cian */
+            --kar-primary: #3B82F6; /* Azul institucional */
+            --kar-accent: #10B981; /* Verde de acento */
         }
 
-        /* ------------------ LOADER ESTÉTICO MODERNO ------------------ */
+        /* ------------------ LOADER ESTÉTICO ------------------ */
         .loader-container {
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: #0F172A; /* Fondo oscuro que coincide con el Hero */
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 5000; /* Siempre encima de todo */
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background-color: #0F172A; 
+            display: flex; justify-content: center; align-items: center;
+            z-index: 5000;
             transition: opacity 0.5s ease;
         }
-
         .spinner {
-            width: 50px;
-            height: 50px;
+            width: 50px; height: 50px;
             border: 4px solid rgba(255, 255, 255, 0.1);
-            border-top-color: var(--kar-accent); /* Color de acento de KarMind */
+            border-top-color: var(--kar-accent);
             border-radius: 50%;
             animation: spin 1s linear infinite;
         }
-        
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
+        @keyframes spin { to { transform: rotate(360deg); } }
         /* ------------------ FIN LOADER ------------------ */
 
-        /* ------------------ EFECTO BLOB ANIMADO (HERO) ------------------ */
+        /* ------------------ EFECTO BLOB (Animación decorativa) ------------------ */
         @keyframes blob {
             0%, 100% { transform: translate(0, 0) scale(1); }
             33% { transform: translate(30px, -50px) scale(1.1); }
             66% { transform: translate(-20px, 20px) scale(0.9); }
         }
-
         .animate-blob {
             animation: blob 7s infinite cubic-bezier(0.64, 0.0, 0.35, 1);
         }
-
         .animation-delay-2000 { animation-delay: 2s; }
         .animation-delay-4000 { animation-delay: 4s; }
         /* ------------------ FIN BLOB ------------------ */
-        
     </style>
 </head>
 
+<!-- ==============================================================
+🏗️ ESTRUCTURA PRINCIPAL DEL BODY
+Incluye Loader, Header (Navbar), Main dinámico y Footer institucional.
+================================================================ -->
 <body class="bg-gray-50 min-h-screen flex flex-col" 
       x-data="{ showLoader: true, openMenu: false }" 
       x-init="$nextTick(() => { setTimeout(() => { showLoader = false; }, 500); })">
       
-    <!-- LOADER -->
+    <!-- ===========================
+    ⏳ LOADER ANIMADO DE CARGA INICIAL
+    Desaparece suavemente tras 0.5s.
+    ============================ -->
     <div x-show="showLoader" x-cloak class="loader-container">
         <div class="text-center">
             <div class="spinner mb-4"></div>
@@ -95,30 +120,31 @@
         </div>
     </div>
     
-    <!-- HEADER Y NAV BAR -->
+    <!-- ===========================
+    🧭 ENCABEZADO Y NAVEGACIÓN PRINCIPAL
+    Incluye logo dinámico, menú adaptable y navegación móvil.
+    ============================ -->
     <header class="sticky top-0 z-40">
         <nav class="bg-gray-900/90 backdrop-blur-lg border-b border-gray-700/50">
             <div class="container mx-auto px-6 py-4 flex items-center justify-between">
                 
-                <!-- LOGO DINÁMICO + TEXTO KarMind (Ahora h-10 y siempre con texto) -->
+                <!-- LOGO DINÁMICO Y TEXTO INSTITUCIONAL -->
                 <a href="{% url 'core:home' %}" class="flex items-center space-x-2">
                     {% if logo_url %}
-                        <!-- 2. CAMBIO: Logo más grande (h-10) y texto acompañante -->
                         <img src="{{ logo_url }}" alt="Logo de KarMind" class="h-10 w-auto">
                     {% endif %}
-                    
                     <span class="text-2xl font-extrabold text-white tracking-tight">
                         <span class="text-blue-400">Kar</span><span class="text-green-400">Mind</span>
                     </span>
                 </a>
 
-                <!-- Botón de Menú Móvil -->
+                <!-- Botón de Menú (Móvil) -->
                 <button @click="openMenu = !openMenu" class="lg:hidden text-gray-300 hover:text-white focus:outline-none">
                     <i x-show="!openMenu" class="fa-solid fa-bars fa-lg"></i>
                     <i x-show="openMenu" class="fa-solid fa-xmark fa-lg"></i>
                 </button>
 
-                <!-- Menú Desktop -->
+                <!-- Navegación Desktop -->
                 <div class="hidden lg:flex items-center space-x-6">
                     <a href="{% url 'core:home' %}" class="text-gray-300 hover:text-white font-medium transition">Inicio</a>
                     <a href="{% url 'core:nosotros' %}" class="text-gray-300 hover:text-white font-medium transition">Nosotros</a>
@@ -130,7 +156,7 @@
                 </div>
             </div>
             
-            <!-- Menú Móvil Desplegable -->
+            <!-- Menú Responsive (Móvil) -->
             <div x-show="openMenu" 
                  x-cloak 
                  @click.outside="openMenu = false" 
@@ -153,16 +179,24 @@
         </nav>
     </header>
 
-    <!-- CONTENIDO ESPECÍFICO DE LA PÁGINA (MAIN) -->
+    <!-- ==============================================================
+    📄 SECCIÓN DE CONTENIDO PRINCIPAL (DINÁMICO)
+    Donde se renderizan los bloques de contenido específicos de cada vista.
+    =============================================================== -->
     <main class="flex-grow">
-        {% block content %}{% endblock %}
+        {% block content %}
+        {% endblock %}
     </main>
 
-    <!-- FOOTER -->
+    <!-- ==============================================================
+    ⚙️ PIE DE PÁGINA INSTITUCIONAL
+    Contiene logo, enlaces legales, redes sociales y datos de contacto.
+    =============================================================== -->
     <footer class="bg-gray-900 text-white pt-20 pb-12 mt-auto">
         <div class="container mx-auto px-6">
             <div class="grid md:grid-cols-5 gap-12 border-b border-gray-700 pb-12">
-                <!-- Columna 1: Logo y Redes Sociales -->
+                
+                <!-- 🧩 Columna 1: Logo + Redes Sociales -->
                 <div class="md:col-span-2">
                     <h3 class="text-3xl font-extrabold mb-4">
                         <span class="text-blue-400">Kar</span><span class="text-green-400">Mind</span>
@@ -183,7 +217,7 @@
                     </div>
                 </div>
                 
-                <!-- Columna 2: Soluciones -->
+                <!-- 🧩 Columna 2: Soluciones -->
                 <div>
                     <h4 class="text-lg font-semibold mb-4">Soluciones</h4>
                     <ul class="space-y-2 text-sm">
@@ -194,7 +228,7 @@
                     </ul>
                 </div>
                 
-                <!-- Columna 3: Información Legal -->
+                <!-- 🧩 Columna 3: Información Legal -->
                 <div>
                     <h4 class="text-lg font-semibold mb-4">Información Legal</h4>
                     <ul class="space-y-2 text-sm">
@@ -205,7 +239,7 @@
                     </ul>
                 </div>
 
-                <!-- Columna 4: Contacto y Mapa -->
+                <!-- 🧩 Columna 4: Contacto -->
                 <div id="contacto" class="md:col-span-1">
                     <h4 class="text-lg font-semibold mb-4">Contacto</h4>
                     <address class="not-italic text-gray-400 space-y-2 text-sm mb-6">
@@ -221,7 +255,7 @@
                 </div>
             </div>
             
-            <!-- Pie de página final -->
+            <!-- ⚙️ Pie final (copyright) -->
             <div class="pt-6 text-center md:flex md:justify-between md:text-left">
                 <p class="text-gray-500 text-xs">
                     © {% now "Y" %} KarMind. Todos los derechos reservados.

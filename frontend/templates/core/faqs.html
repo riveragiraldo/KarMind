@@ -1,70 +1,53 @@
 {% extends 'core/base.html' %}
 {% load static %}
 
+<!-- ========================================================================= -->
+<!-- 🌐 PÁGINA: FAQs (Preguntas Frecuentes)                                     -->
+<!-- ========================================================================= -->
+<!-- 
+📄 Descripción General:
+    Esta plantilla presenta la sección de Preguntas Frecuentes (FAQs) del sitio 
+    web corporativo de KarMind. Su propósito es responder de manera clara, 
+    accesible y moderna a las inquietudes más comunes de nuestros usuarios, 
+    clientes potenciales y aliados estratégicos.
+
+🏗️ Estructura:
+    1. HERO SECTION: Introducción visual y conceptual al módulo de FAQs.
+    2. SECCIÓN DE ACORDEÓN: Despliega preguntas y respuestas dinámicamente 
+       mediante Alpine.js.
+    3. LLAMADA A LA ACCIÓN (CTA): Motiva al visitante a contactar a KarMind 
+       directamente si su pregunta no está incluida.
+
+💡 Tecnologías empleadas:
+    - "extends 'core/base.html'" → Hereda la plantilla base del proyecto Django.
+    - "load static" → Permite el uso de recursos estáticos (imágenes, CSS, JS).
+    - TailwindCSS → Define estilos utilitarios y responsivos.
+    - Alpine.js → Maneja la lógica de apertura/cierre del acordeón.
+    - Font Awesome → Íconos visuales que refuerzan la interfaz.
+
+🧠 Concepto de Diseño:
+    El enfoque de esta página se basa en la transparencia y confianza. 
+    Cada respuesta refleja la filosofía del Humanismo Tecnológico de KarMind: 
+    tecnología pensada para servir y simplificar la vida de las personas y 
+    las empresas, no para reemplazarlas.
+
+⚙️ Comportamiento:
+    - Las FAQs están definidas en un arreglo JavaScript (`faqsData`).
+    - Se renderizan dinámicamente usando una estructura `<template x-for>`.
+    - Cada pregunta se despliega como un acordeón interactivo, con transición 
+      animada y soporte móvil.
+-->
+
 {% block title %}KarMind | Preguntas Frecuentes (FAQs): Transformación Digital PYME{% endblock %}
 
 {% block content %}
 
-<!-- Definición de los datos de las FAQs para usar en el acordeón -->
-<script>
-    // 10 Preguntas Frecuentes alineadas con la filosofía de KarMind
-    const faqsData = [
-        {
-            id: 'q1',
-            question: 'Necesito un aplicativo económico para gestionar el inventario de mi negocio, ¿es posible?',
-            answer: 'Absolutamente. Nos especializamos en soluciones a la medida y modulares. Comenzamos con un Mínimo Producto Viable (MVP) enfocado solo en inventario, utilizando herramientas No-Code o desarrollo ligero para mantener los costos bajos y asegurar una rápida implementación. Escalaremos solo cuando tu negocio lo requiera.',
-        },
-        {
-            id: 'q2',
-            question: 'Quiero implementar un chatbot de WhatsApp, ¿qué proceso debo seguir?',
-            answer: 'Es muy sencillo: El primer paso es contactarnos. Luego, en una sesión de diagnóstico gratuito, definimos los objetivos (atención al cliente, ventas, soporte) y el alcance del bot. Nos encargamos del diseño, la programación y la integración con WhatsApp, todo bajo nuestro enfoque de humanismo tecnológico para que la interacción se sienta natural y efectiva.',
-        },
-        {
-            id: 'q3',
-            question: '¿Por qué KarMind se enfoca en el "Humanismo Tecnológico"?',
-            answer: 'Significa que la tecnología es una herramienta para empoderar a tu equipo, no para reemplazarlo. Diseñamos sistemas que son intuitivos, fáciles de aprender y que reducen la carga de trabajo repetitiva, permitiendo que tus empleados se concentren en tareas de alto valor, estrategia y relación con el cliente.',
-        },
-        {
-            id: 'q4',
-            question: 'Mi empresa es pequeña, ¿puedo acceder a soluciones de Inteligencia Artificial?',
-            answer: 'Sí. Ya no necesitas grandes infraestructuras. Implementamos soluciones de IA accesibles y enfocadas, como análisis predictivo básico, segmentación de clientes o automatización de respuestas (Chatbots y agentes conversacionales ligeros), usando plataformas en la nube optimizadas para PYMES.',
-        },
-        {
-            id: 'q5',
-            question: '¿Pueden desarrollar agentes de voz o asistentes virtuales?',
-            answer: 'Sí, podemos desarrollar agentes de voz. Nuestro enfoque es en la utilidad: si la solución de voz mejora significativamente la eficiencia (por ejemplo, para telemercadeo automatizado o soporte rápido), la integramos. Sin embargo, siempre evaluamos si un chatbot o una solución web es más práctica y ética para el usuario final.',
-        },
-        {
-            id: 'q6',
-            question: '¿Cuánto tiempo tarda la implementación de un sistema de gestión a la medida?',
-            answer: 'Depende de la complejidad. Gracias a nuestro enfoque modular y al uso estratégico de metodologías ágiles y herramientas No-Code/Low-Code, un MVP de gestión (como inventario o pedidos) puede estar funcionando en tan solo 6 a 10 semanas. Los sistemas más grandes pueden tomar entre 3 y 6 meses.',
-        },
-        {
-            id: 'q7',
-            question: '¿Qué diferencia a KarMind de otras consultoras de software?',
-            answer: 'Nuestra diferencia es el *Partnership* a largo plazo y la filosofía de Adaptabilidad. No desarrollamos y nos vamos; evolucionamos contigo. Además, priorizamos soluciones que se ajustan a tus flujos (a la medida) sobre forzarte a adaptarte a un software genérico.',
-        },
-        {
-            id: 'q8',
-            question: 'Una vez implementado, ¿ofrecen soporte y capacitación?',
-            answer: 'Por supuesto. El Soporte Continuo es uno de nuestros pilares. Incluimos capacitación exhaustiva a tu equipo para garantizar la adopción total del sistema, y ofrecemos planes de soporte post-implementación y mantenimiento para asegurar la estabilidad y el crecimiento futuro.',
-        },
-        {
-            id: 'q9',
-            question: '¿Qué es el desarrollo No-Code/Low-Code y cómo beneficia a mi PYME?',
-            answer: 'Son herramientas que permiten crear aplicaciones y automatizaciones con poco o ningún código. Esto beneficia a tu PYME porque reduce drásticamente el tiempo de desarrollo, disminuye los costos iniciales y permite que las actualizaciones sean más rápidas y flexibles.',
-        },
-        {
-            id: 'q10',
-            question: '¿Mi información estará segura en los sistemas que desarrollan?',
-            answer: 'La seguridad y la ética son máximas prioridades. Diseñamos todas nuestras soluciones siguiendo las mejores prácticas de ciberseguridad, cumpliendo con los estándares de protección de datos relevantes, y asegurando que tu información sensible esté cifrada y protegida.',
-        },
-    ];
-</script>
-
-<!-- 1. HERO SECTION: Título Principal de FAQ -->
+<!-- ===================================================================== -->
+<!-- 1. HERO SECTION: Presentación visual del módulo de Preguntas Frecuentes -->
+<!-- ===================================================================== -->
 <section class="bg-gray-900 text-white min-h-[50vh] flex items-center overflow-hidden relative">
-    <!-- Fondo Animado Blob (Visual) -->
+    
+    <!-- Efecto visual de blobs con colores institucionales (verde y azul) -->
     <div class="absolute inset-0 z-0">
         <div class="absolute top-0 left-0 w-64 h-64 bg-green-600 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob"></div>
         <div class="absolute top-0 right-0 w-64 h-64 bg-blue-600 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-2000"></div>
@@ -72,57 +55,85 @@
 
     <div class="container mx-auto px-6 py-24 relative z-10">
         <div class="max-w-4xl mx-auto text-center">
-            
-            <!-- Título Principal -->
+
+            <!-- Título principal -->
             <h1 class="text-5xl md:text-6xl font-extrabold mb-4 leading-tight">
-                <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-green-400">Preguntas Frecuentes</span>
+                <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-green-400">
+                    Preguntas Frecuentes
+                </span>
             </h1>
-            
-            <!-- Subtítulo H2 (Eslogan) -->
+
+            <!-- Subtítulo -->
             <h2 class="text-2xl md:text-3xl mb-8 font-light text-gray-300">
-                Aclaramos tus dudas sobre la <span class="font-bold text-white">Gestión Inteligente</span> y la <span class="font-bold text-white">Innovación PYME</span>.
+                Aclaramos tus dudas sobre la <span class="font-bold text-white">Gestión Inteligente</span> 
+                y la <span class="font-bold text-white">Innovación PYME</span>.
             </h2>
 
-            <!-- Propósito -->
+            <!-- Descripción introductoria -->
             <p class="text-lg text-gray-400 max-w-3xl mx-auto">
-                Encuentra respuestas rápidas sobre nuestras soluciones, metodología y nuestro compromiso con el Humanismo Tecnológico.
+                Encuentra respuestas rápidas sobre nuestras soluciones, metodología 
+                y nuestro compromiso con el Humanismo Tecnológico.
             </p>
-            
+
         </div>
     </div>
 </section>
 
-<!-- 2. SECCIÓN: ACORDEÓN DE PREGUNTAS Y RESPUESTAS -->
+<!-- ===================================================================== -->
+<!-- 2. SECCIÓN: Acordeón interactivo de Preguntas y Respuestas -->
+<!-- ===================================================================== -->
+
+<!-- 
+🧩 Descripción técnica:
+    - Se utiliza el atributo "x-data" de Alpine.js para gestionar el estado del acordeón.
+    - Cada pregunta (FAQ) se define en el arreglo `faqsData`, declarado en un bloque <script>.
+    - El bucle <template x-for> genera dinámicamente las tarjetas de FAQ.
+    - Se aplican transiciones suaves y efectos visuales mediante clases TailwindCSS.
+-->
+
+<!-- Declaración de las FAQs (Datos simulados para renderizado en cliente) -->
+<script>
+    const faqsData = [
+        { id: 'q1', question: 'Necesito un aplicativo económico para gestionar el inventario de mi negocio, ¿es posible?', answer: 'Absolutamente. Nos especializamos en soluciones a la medida y modulares. Comenzamos con un Mínimo Producto Viable (MVP)...' },
+        { id: 'q2', question: 'Quiero implementar un chatbot de WhatsApp, ¿qué proceso debo seguir?', answer: 'Es muy sencillo: El primer paso es contactarnos. Luego, en una sesión de diagnóstico gratuito...' },
+        { id: 'q3', question: '¿Por qué KarMind se enfoca en el "Humanismo Tecnológico"?', answer: 'Significa que la tecnología es una herramienta para empoderar a tu equipo...' },
+        { id: 'q4', question: 'Mi empresa es pequeña, ¿puedo acceder a soluciones de Inteligencia Artificial?', answer: 'Sí. Ya no necesitas grandes infraestructuras. Implementamos soluciones de IA accesibles...' },
+        { id: 'q5', question: '¿Pueden desarrollar agentes de voz o asistentes virtuales?', answer: 'Sí, podemos desarrollar agentes de voz. Nuestro enfoque es en la utilidad...' },
+        { id: 'q6', question: '¿Cuánto tiempo tarda la implementación de un sistema de gestión a la medida?', answer: 'Depende de la complejidad. Gracias a nuestro enfoque modular y metodologías ágiles...' },
+        { id: 'q7', question: '¿Qué diferencia a KarMind de otras consultoras de software?', answer: 'Nuestra diferencia es el Partnership a largo plazo y la filosofía de Adaptabilidad...' },
+        { id: 'q8', question: 'Una vez implementado, ¿ofrecen soporte y capacitación?', answer: 'Por supuesto. El Soporte Continuo es uno de nuestros pilares. Incluimos capacitación exhaustiva...' },
+        { id: 'q9', question: '¿Qué es el desarrollo No-Code/Low-Code y cómo beneficia a mi PYME?', answer: 'Son herramientas que permiten crear aplicaciones y automatizaciones con poco o ningún código...' },
+        { id: 'q10', question: '¿Mi información estará segura en los sistemas que desarrollan?', answer: 'La seguridad y la ética son máximas prioridades. Diseñamos todas nuestras soluciones...' },
+    ];
+</script>
+
 <section id="faqs-list" class="py-24 bg-gray-50" x-data="{ open: null }">
     <div class="container mx-auto px-6 max-w-3xl">
 
-        <!-- Lema o Introducción -->
+        <!-- Encabezado de sección -->
         <div class="text-center mb-12">
-            <h3 class="text-3xl font-bold text-gray-900">Soluciones Claras. Respuesta Directas.</h3>
+            <h3 class="text-3xl font-bold text-gray-900">Soluciones Claras. Respuestas Directas.</h3>
         </div>
 
-        <!-- Acordeón de FAQs -->
+        <!-- Render dinámico del acordeón -->
         <div class="space-y-4">
-            {% comment %} 
-                Iteramos sobre los datos de FAQs inyectados vía JS para crear el acordeón
-            {% endcomment %}
             <template x-for="faq in faqsData" :key="faq.id">
                 <div class="bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden">
-                    
-                    <!-- Botón/Pregunta -->
-                    <button @click="open = (open === faq.id ? null : faq.id)" 
-                            :aria-expanded="open === faq.id"
-                            class="flex justify-between items-center w-full px-6 py-4 text-left focus:outline-none transition duration-300"
-                            :class="open === faq.id ? 'bg-blue-50 text-blue-700' : 'text-gray-900 hover:bg-gray-50'">
+
+                    <!-- Pregunta -->
+                    <button 
+                        @click="open = (open === faq.id ? null : faq.id)" 
+                        :aria-expanded="open === faq.id"
+                        class="flex justify-between items-center w-full px-6 py-4 text-left focus:outline-none transition duration-300"
+                        :class="open === faq.id ? 'bg-blue-50 text-blue-700' : 'text-gray-900 hover:bg-gray-50'">
+                        
                         <span class="text-lg font-semibold" x-text="faq.question"></span>
                         <i class="fa-solid fa-chevron-down transform transition-transform duration-300 text-blue-500"
                            :class="open === faq.id ? 'rotate-180' : 'rotate-0'"></i>
                     </button>
 
-                    <!-- Respuesta/Contenido -->
-                    <div x-show="open === faq.id" 
-                         x-collapse.duration.300ms
-                         class="px-6 pb-6 pt-0">
+                    <!-- Respuesta -->
+                    <div x-show="open === faq.id" x-collapse.duration.300ms class="px-6 pb-6 pt-0">
                         <p class="text-gray-700 leading-relaxed border-t border-gray-200 pt-4" x-text="faq.answer"></p>
                     </div>
                 </div>
@@ -132,14 +143,21 @@
     </div>
 </section>
 
-<!-- 3. SECCIÓN: LLAMADA A LA ACCIÓN FINAL -->
+<!-- ===================================================================== -->
+<!-- 3. SECCIÓN FINAL: Llamado a la Acción (CTA)                            -->
+<!-- ===================================================================== -->
 <section class="py-16 bg-gray-900 text-white text-center">
     <div class="container mx-auto px-6">
         <h2 class="text-3xl font-bold mb-4">¿Tu pregunta no está aquí?</h2>
-        <p class="text-xl text-gray-400 mb-8">Contáctanos directamente para una asesoría personalizada y gratuita.</p>
-        
-        <a href="#contacto" class="inline-flex items-center justify-center px-10 py-3 text-lg font-medium rounded-lg text-white bg-gradient-to-r from-green-500 to-blue-600 hover:opacity-90 transition-opacity duration-300 shadow-lg shadow-green-500/50">
-            ¡Conversemos Ahora! <i class="fa-solid fa-envelope ml-2"></i>
+        <p class="text-xl text-gray-400 mb-8">
+            Contáctanos directamente para una asesoría personalizada y gratuita.
+        </p>
+
+        <!-- Botón de contacto -->
+        <a href="#contacto" 
+           class="inline-flex items-center justify-center px-10 py-3 text-lg font-medium rounded-lg text-white bg-gradient-to-r from-green-500 to-blue-600 hover:opacity-90 transition-opacity duration-300 shadow-lg shadow-green-500/50">
+            ¡Conversemos Ahora! 
+            <i class="fa-solid fa-envelope ml-2"></i>
         </a>
     </div>
 </section>
