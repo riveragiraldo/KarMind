@@ -16,7 +16,7 @@ from import_export.admin import ImportExportModelAdmin
 from .models import (
     Departamento, Ciudad, Barrio, Empresa, Sede,
     Rol, User, Configuracion, Servicio,
-    EstadoContacto, Contacto
+    EstadoContacto, Contacto, TipoPQRSF, PQRSF
 )
 
 # Reasignación del modelo de usuario personalizado
@@ -551,3 +551,159 @@ class ContactoAdmin(admin.ModelAdmin):
         """
         qs = super().get_queryset(request)
         return qs.select_related('servicio', 'estado')
+# =====================================================
+# 🗂️ Administración: Tipos de PQRSF
+# =====================================================
+# Configura la visualización y administración de los
+# tipos de solicitudes PQRSF disponibles.
+# =====================================================
+
+@admin.register(TipoPQRSF)
+class TipoPQRSFAdmin(admin.ModelAdmin):
+    """
+    Panel administrativo para la gestión de los tipos de PQRSF.
+    Permite crear, editar y desactivar los tipos disponibles.
+    """
+
+    # -------------------------------------------------
+    # 🧩 Configuración general
+    # -------------------------------------------------
+    list_display = ('id', 'nombre', 'is_active', 'fecha_creacion', 'fecha_actualizacion')
+    search_fields = ('nombre',)
+    list_filter = ('is_active',)
+    readonly_fields = ('fecha_creacion', 'fecha_actualizacion')
+
+    # -------------------------------------------------
+    # 🧾 Organización visual en secciones
+    # -------------------------------------------------
+    fieldsets = (
+        ("📋 Información del tipo de PQRSF", {
+            "fields": ("nombre", "is_active"),
+            "description": "Define los diferentes tipos de solicitudes (Petición, Queja, Reclamo, etc.)."
+        }),
+        ("🕓 Auditoría y control", {
+            "fields": (
+                "creado_por",
+                "actualizado_por",
+                "fecha_creacion",
+                "fecha_actualizacion",
+            ),
+            "description": "Campos de trazabilidad interna del sistema."
+        }),
+    )
+
+    # -------------------------------------------------
+    # ⚙️ Personalización del guardado
+    # -------------------------------------------------
+    def save_model(self, request, obj, form, change):
+        if request.user and request.user.is_authenticated:
+            obj.actualizado_por = request.user
+            if not obj.pk:
+                obj.creado_por = request.user
+        super().save_model(request, obj, form, change)
+
+
+# =====================================================
+# 🗂️ Administración: PQRSF
+# =====================================================
+# Configuración del panel de administración para gestionar
+# las solicitudes PQRSF recibidas desde la web pública.
+# =====================================================
+
+@admin.register(PQRSF)
+class PQRSFAdmin(admin.ModelAdmin):
+    """
+    Panel administrativo para la gestión de PQRSF.
+    Permite visualizar las solicitudes registradas por ciudadanos
+    y hacer seguimiento de su estado, observaciones y trazabilidad.
+    """
+
+    # -------------------------------------------------
+    # 🧩 Configuración general
+    # -------------------------------------------------
+    list_display = (
+        'id',
+        'nombres',
+        'apellidos',
+        'correo',
+        'telefono',
+        'tipo',
+        'estado',
+        'fecha_creacion',
+        'is_active',
+    )
+    list_filter = ('tipo', 'estado', 'fecha_creacion', 'is_active')
+    search_fields = ('nombres', 'apellidos', 'correo', 'telefono', 'descripcion', 'observaciones')
+    readonly_fields = (
+        'fecha_creacion',
+        'fecha_autorizacion',
+        'fecha_actualizacion',
+        'consentimiento_hash',
+        'ip_autorizacion',
+        'user_agent',
+    )
+    ordering = ('-fecha_creacion',)
+
+    # -------------------------------------------------
+    # 🧾 Organización visual en secciones
+    # -------------------------------------------------
+    fieldsets = (
+        ("📧 Información del remitente", {
+            "fields": ("nombres", "apellidos", "correo", "telefono"),
+            "description": "Datos originales del remitente (no modificables)."
+        }),
+        ("📋 Detalle de la solicitud", {
+            "fields": ("tipo", "descripcion", "evidencia", "acepta_politica", "estado", "observaciones"),
+            "description": "Información general de la solicitud y su seguimiento."
+        }),
+        ("🔐 Evidencia técnica del consentimiento", {
+            "fields": (
+                "ip_autorizacion",
+                "user_agent",
+                "fecha_autorizacion",
+                "consentimiento_hash",
+            ),
+            "description": "Registro técnico de aceptación de la política de datos personales."
+        }),
+        ("🕓 Auditoría y control", {
+            "fields": ("actualizado_por", "fecha_creacion", "fecha_actualizacion", "is_active"),
+            "description": "Campos de trazabilidad interna y control administrativo."
+        }),
+    )
+
+    # -------------------------------------------------
+    # ⚙️ Personalización del guardado
+    # -------------------------------------------------
+    def save_model(self, request, obj, form, change):
+        """
+        Asigna el usuario autenticado como responsable de la modificación.
+        """
+        if request.user and request.user.is_authenticated:
+            obj.actualizado_por = request.user
+        super().save_model(request, obj, form, change)
+
+    # -------------------------------------------------
+    # 🧱 Permisos de creación y eliminación
+    # -------------------------------------------------
+    def has_add_permission(self, request):
+        """
+        Las solicitudes PQRSF se generan desde el formulario público.
+        Se desactiva la creación manual desde el panel administrativo.
+        """
+        return False
+
+    def has_delete_permission(self, request, obj=None):
+        """
+        Solo los superusuarios pueden eliminar registros.
+        """
+        return request.user.is_superuser
+
+    # -------------------------------------------------
+    # 🔍 Optimización de consultas
+    # -------------------------------------------------
+    def get_queryset(self, request):
+        """
+        Mejora el rendimiento incluyendo relaciones de tipo y estado.
+        """
+        qs = super().get_queryset(request)
+        return qs.select_related('tipo', 'estado')

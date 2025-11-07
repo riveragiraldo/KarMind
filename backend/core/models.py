@@ -702,4 +702,192 @@ class Contacto(models.Model):
 
         super().save(*args, **kwargs)
 
+class TipoPQRSF(BaseModel):
+    """
+    Define los diferentes tipos de solicitudes PQRSF
+    disponibles para clasificación de los registros.
+
+    Hereda trazabilidad de BaseModel para control interno.
+    """
+
+    nombre = models.CharField(
+        max_length=100,
+        unique=True,
+        help_text="Nombre del tipo de solicitud (Ej: Petición, Queja, Reclamo, Sugerencia, Felicitación)."
+    )
+    
+
+    class Meta:
+        verbose_name = "Tipo de PQRSF"
+        verbose_name_plural = "Tipos de PQRSF"
+        ordering = ["nombre"]
+
+    def __str__(self):
+        return self.nombre
+    
+
+
+# ==============================================================
+# 📨 MODELO: PQRSF (Peticiones, Quejas, Reclamos, Sugerencias y Felicitaciones)
+# ==============================================================
+# Representa las solicitudes registradas por ciudadanos de manera anónima.
+# No requiere autenticación; incluye trazabilidad temporal básica.
+# ==============================================================
+class PQRSF(models.Model):
+    """
+    Representa una solicitud PQRSF enviada por un ciudadano o usuario público.
+
+    No requiere autenticación, pero mantiene registro temporal
+    y permite asociar la solicitud con un tipo definido..
+    """
+
+    # -----------------------------
+    # Campos principales
+    # -----------------------------
+    fecha_creacion = models.DateTimeField(auto_now_add=True)
+    nombres = models.CharField("Nombres", max_length=20, validators=[MaxLengthValidator(20)])
+    apellidos = models.CharField("Apellidos", max_length=20, blank=True, validators=[MaxLengthValidator(20)])
+    telefono = models.CharField(
+        "Teléfono",
+        max_length=16,
+        validators=[RegexValidator(r'^\+?\d{7,15}$', message="Formato telefónico inválido.")]
+    )
+    correo = models.EmailField("Correo electrónico")
+    tipo = models.ForeignKey(TipoPQRSF, on_delete=models.PROTECT, related_name='Tipo_PQRS')
+    descripcion = models.CharField("Descripción de la solicitud", max_length=200, validators=[MaxLengthValidator(200)])
+    evidencia = models.FileField(
+        upload_to="pqrsf_adjuntos/",
+        blank=True,
+        null=True,
+        help_text="Archivo anexo opcional (máximo 5 MB)."
+    )
+    acepta_politica = models.BooleanField(
+        "Acepta política de tratamiento de datos",
+        default=False,
+        help_text="El usuario debe aceptar la política de tratamiento de datos para enviar la solicitud."
+    )
+    estado = models.ForeignKey(
+        EstadoContacto,
+        on_delete=models.PROTECT,
+        related_name='pqrs',
+        null=True,
+        blank=True,
+        verbose_name="Estado de la PQRS"
+    )
+    
+    observaciones = models.TextField(blank=True, null=True, help_text="Observaciones del contacto o gestión realizada.")
+    
+
+
+    # -----------------------------
+    # 🔐 Evidencia técnica de consentimiento
+    # -----------------------------
+    ip_autorizacion = models.GenericIPAddressField(
+        "Dirección IP de autorización",
+        null=True,
+        blank=True,
+        help_text="IP desde la cual el usuario otorgó el consentimiento."
+    )
+
+    user_agent = models.CharField(
+        "Agente de usuario (navegador/dispositivo)",
+        max_length=300,
+        blank=True,
+        help_text="Información del navegador o dispositivo desde el cual se realizó el envío."
+    )
+
+    fecha_autorizacion = models.DateTimeField(
+        "Fecha y hora de autorización",
+        null=True,
+        blank=True,
+        help_text="Fecha exacta en que el usuario aceptó la política de datos."
+    )
+
+    consentimiento_hash = models.CharField(
+        "Huella digital del consentimiento (SHA256)",
+        max_length=64,
+        blank=True,
+        help_text="Hash único que acredita la integridad del consentimiento otorgado."
+    )
+
+    # -----------------------------
+    # Auditoría de modificaciones
+    # -----------------------------
+    actualizado_por = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='pqrs_actualizados',
+        verbose_name="Usuario que modificó"
+    )
+
+    fecha_actualizacion = models.DateTimeField(auto_now=True)
+    is_active = models.BooleanField(default=True)
+
+    # -----------------------------
+    # Meta y representación
+    # -----------------------------
+    class Meta:
+        verbose_name = "PQRSF"
+        verbose_name_plural = "PQRSF"
+        ordering = ['-fecha_creacion']
+        indexes = [
+            models.Index(fields=['correo']),
+            models.Index(fields=['telefono']),
+            models.Index(fields=['estado']),
+        ]
+
+    def __str__(self):
+        tipo_nombre = self.tipo.nombre if self.tipo else "—"
+        return f"{self.nombres} {self.apellidos or ''}".strip() + f" — {tipo_nombre}"
+
+    # -----------------------------
+    # Validación
+    # -----------------------------
+    def clean(self):
+        errors = {}
+
+        if not self.acepta_politica:
+            errors['acepta_politica'] = ValidationError(
+                "El envío requiere la aceptación de la política de tratamiento de datos."
+            )
+
+        if not self.estado:
+            pendiente = EstadoContacto.objects.filter(nombre__iexact='PENDIENTE').first()
+            if pendiente:
+                self.estado = pendiente
+            else:
+                errors['estado'] = ValidationError(
+                    "Debe existir un estado 'PENDIENTE' para asignar por defecto."
+                )
+
+        if errors:
+            raise ValidationError(errors)
+
+    # -----------------------------
+    # Save
+    # -----------------------------
+    def save(self, *args, **kwargs):
+        # Validar datos antes de guardar
+        self.full_clean()
+
+        # Registrar fecha de autorización si aplica
+        if self.acepta_politica and not self.fecha_autorizacion:
+            self.fecha_autorizacion = timezone.now()
+
+        # Generar hash de consentimiento si aún no existe
+        if self.acepta_politica and not self.consentimiento_hash:
+            base_str = (
+                f"{self.nombres}"
+                f"{self.apellidos}"
+                f"{self.correo}"
+                f"{self.telefono or ''}"
+                f"{self.ip_autorizacion or ''}"
+                f"{self.fecha_autorizacion}"
+            )
+            self.consentimiento_hash = hashlib.sha256(base_str.encode()).hexdigest()
+
+        super().save(*args, **kwargs)
+
 
