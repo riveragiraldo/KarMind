@@ -630,7 +630,7 @@ class PQRSFAdmin(admin.ModelAdmin):
         'tipo',
         'estado',
         'fecha_creacion',
-        'is_active',
+        'evidencia',
     )
     list_filter = ('tipo', 'estado', 'fecha_creacion', 'is_active')
     search_fields = ('nombres', 'apellidos', 'correo', 'telefono', 'descripcion', 'observaciones')

@@ -19,14 +19,14 @@ from django.urls import reverse_lazy
 # -----------------------------------------------------
 # 🗂️ Modelos y Formularios internos
 # -----------------------------------------------------
-from .models import Configuracion, Contacto
-from .forms import ContactoForm
+from .models import Configuracion, Contacto, PQRSF
+from .forms import ContactoForm, PQRSForm
 
 # -----------------------------------------------------
 # ⚙️ Utilidades y librerías adicionales
 # -----------------------------------------------------
 import threading
-from core.utils import enviar_correos_contacto
+from core.utils import enviar_correos_contacto, enviar_correos_pqrsf
 
 
 # ============================================================
@@ -160,11 +160,6 @@ class AcercaDeView(LogoContextMixin, TemplateView):
 
 
 
-# -----------------------------------------------------
-# ⚙️ Utilidades y librerías adicionales
-# -----------------------------------------------------
-import threading
-from core.utils import enviar_correos_contacto
 
 # ============================================================
 # 🌐 Página Contacto (Landing Page) 
@@ -254,6 +249,117 @@ class ContactoView(LogoContextMixin, FormView):
         )
         return super().form_invalid(form)
 
+
+
+
+
+# ============================================================
+# 🌐 Página PQRSF (Landing Page) 
+# ============================================================
+class PQRSFView(LogoContextMixin, FormView):
+    """
+    Renderiza la página de PQRSF y gestiona el envío del formulario.
+    Registra evidencia técnica del consentimiento digital.
+    """
+    template_name = 'core/pqrsf.html'
+    form_class = PQRSForm
+    success_url = reverse_lazy('core:pqrsf')
+
+    # ------------------------------------------------------------
+    # ✅ Procesamiento de formulario válido
+    # ------------------------------------------------------------
+    def form_valid(self, form):
+        """
+        Guarda la instancia de PQRSF y lanza el envío de correos
+        en un hilo separado para no bloquear la respuesta.
+        """
+        try:
+            # 1️⃣ Crear instancia sin guardar aún
+            pqrsf_instance = form.save(commit=False)
+
+            # 2️⃣ Registrar IP, agente y fecha de consentimiento
+            pqrsf_instance.ip_autorizacion = self.get_client_ip()
+            pqrsf_instance.user_agent = self.request.META.get('HTTP_USER_AGENT', 'Desconocido')
+
+            if not pqrsf_instance.fecha_autorizacion and pqrsf_instance.acepta_politica:
+                pqrsf_instance.fecha_autorizacion = timezone.now()
+
+            # 3️⃣ Guardar con archivo adjunto si lo hay
+            pqrsf_instance.save()
+
+            # 4️⃣ Envío de correos en segundo plano
+            correo_thread = threading.Thread(
+                target=enviar_correos_pqrsf,
+                args=(pqrsf_instance,),
+                daemon=True
+            )
+            correo_thread.start()
+
+            # 5️⃣ Notificación al usuario
+            messages.success(
+                self.request,
+                '¡Mensaje recibido! Gracias por contactarnos. '
+                'Nuestro equipo revisará tu solicitud y te responderá pronto.'
+            )
+
+        except Exception as e:
+            print(f"❌ Error al procesar solicitud de PQRSF: {e}")
+            messages.error(
+                self.request,
+                'Hubo un error crítico al guardar tu solicitud. '
+                'Por favor, inténtalo de nuevo más tarde.'
+            )
+            return super().form_invalid(form)
+
+        return super().form_valid(form)
+
+    # ------------------------------------------------------------
+    # ⚙️ Manejo de IP del cliente
+    # ------------------------------------------------------------
+    def get_client_ip(self):
+        """
+        Obtiene la IP real del cliente, considerando servidores proxy.
+        """
+        request = self.request
+        headers = [
+            'HTTP_CF_CONNECTING_IP',   # Cloudflare
+            'HTTP_X_FORWARDED_FOR',    # Proxies estándar
+            'HTTP_X_REAL_IP',          # Nginx o similares
+            'REMOTE_ADDR',             # Fallback local
+        ]
+        for header in headers:
+            ip = request.META.get(header)
+            if ip:
+                return ip.split(',')[0].strip()
+        return '0.0.0.0'
+
+    # ------------------------------------------------------------
+    # 🚫 Manejo de formulario inválido
+    # ------------------------------------------------------------
+    def form_invalid(self, form):
+        """
+        Muestra mensaje de error si el formulario tiene fallos.
+        """
+        messages.error(
+            self.request,
+            'No fue posible enviar tu solicitud. '
+            'Revisa los campos marcados y asegúrate de completar el reCAPTCHA.'
+        )
+        return super().form_invalid(form)
+
+    # ------------------------------------------------------------
+    # ⚙️ Incluir request.FILES para manejar adjuntos
+    # ------------------------------------------------------------
+    def post(self, request, *args, **kwargs):
+        """
+        Sobrescribe el método POST para incluir archivos adjuntos.
+        """
+        form = self.get_form()
+        form = PQRSForm(request.POST, request.FILES)
+        if form.is_valid():
+            return self.form_valid(form)
+        else:
+            return self.form_invalid(form)
 
 
 

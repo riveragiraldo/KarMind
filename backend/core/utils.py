@@ -6,6 +6,7 @@ from django.conf import settings
 from core.models import Configuracion
 from django.urls import reverse
 from django.utils import timezone
+import os
 
 
 # ------------------------------------------------------------
@@ -299,5 +300,261 @@ def enviar_correos_contacto(contacto, request=None):
     except Exception as e:
         print(
             f"❌ Error al procesar correos de contacto #{getattr(contacto, 'id', 'n/a')}: {e}"
+        )
+        return False
+
+
+# ------------------------------------------------------------
+# 📨 Envío de correos de pqrsf (Admin + Usuario)
+# ------------------------------------------------
+
+
+def enviar_correos_pqrsf(pqrsf, request=None):
+    """
+    Envía los correos relacionados con una solicitud de pqrsf:
+    1️⃣ Al administrador (detalles completos)
+    2️⃣ Al usuario (acuse de recibido con nota legal)
+
+    Parámetros:
+    - pqrsf: instancia del modelo PQRSF
+    - request (opcional): para obtener IP y hora local del navegador
+    """
+    try:
+        config = Configuracion.objects.first()
+        if not config or not config.email_administrativo:
+            print("⚠️ No se encontró email_administrativo en Configuración.")
+            return False
+
+        admin_email = config.email_administrativo.strip()
+        user_email = pqrsf.correo.strip() if pqrsf.correo else None
+        if not user_email:
+            print(f"⚠️ pqrsf #{pqrsf.id} no tiene correo válido.")
+            return False
+
+        # ----------------------------------------------------
+        # 📅 Fecha y IP (si request está disponible)
+        # ----------------------------------------------------
+        fecha_local = timezone.localtime(pqrsf.fecha_creacion).strftime(
+            "%d/%m/%Y %H:%M:%S"
+        )
+        ip_origen = pqrsf.ip_autorizacion
+
+        # ----------------------------------------------------
+        # 🔗 GENERACIÓN DE URLs ABSOLUTAS (CAMBIO CLAVE)
+        # ----------------------------------------------------
+        # protocol = 'https' if self.request.is_secure() else 'http'
+        # domain = self.request.get_host()
+        # 1. URL de la Política de Tratamiento de Datos Personales (PTDP)
+        try:
+            # Usar build_absolute_uri para incluir protocolo y dominio
+            ptdp_path = reverse("core:ptdp")
+            ptdp_url = request.build_absolute_uri(ptdp_path) if request else ptdp_path
+        except Exception as e:
+            print(f"Error al generar PTDP URL: {e}")
+            ptdp_url = "#"  # Fallback
+
+        # 2. URL del CTA de Administrador (para responder la solicitud)
+        try:
+            # La URL de respuesta es tipicamente '/admin/pqrsf/{pk}/'
+            admin_cta_path = reverse(
+                "core:pqrsf", args=[pqrsf.pk]
+            )  # Asumo esta es la URL de admin
+
+            # Usar build_absolute_uri para obtener la URL absoluta
+            admin_cta_url = (
+                request.build_absolute_uri(admin_cta_path) if request else "#"
+            )
+
+            # Si no puedes usar 'admin:appname_pqrsf_change', usa la ruta literal:
+            # admin_cta_url = request.build_absolute_uri(f"/admin/pqrsf/{pqrsf.pk}/") if request else "#"
+
+        except Exception as e:
+            print(f"Error al generar Admin CTA URL: {e}")
+            # Si falla (ej. sin request), usamos un placeholder que debería ser editado manualmente
+            admin_cta_url = (
+                f"https://DEBES-PROPORCIONAR-REQUEST/admin/pqrsf/{pqrsf.pk}/"
+            )
+
+        # =====================================================
+        # 🧩 MENSAJE PARA ADMINISTRADOR
+        # =====================================================
+        mensaje_admin_str = """
+            <!-- Bloque de Alerta Principal -->
+    <h1 class="kar-h1" style="font-family: 'Inter', sans-serif; color: #E2E8F0; font-size: 24px; font-weight: 700; margin: 0 0 20px 0;">
+        <span style="color: #10B981;">¡Nueva PQRSF Recibida!</span>
+    </h1>
+    
+    <p class="kar-p" style="font-family: 'Inter', sans-serif; color: #94A3B8; font-size: 15px; line-height: 1.6; margin: 0 0 20px 0;">
+        Un usuario ha completado el formulario de pqrsf en el sitio web y requiere una respuesta.
+    </p>
+
+    <!-- Tarjeta de Datos de pqrsf (Estilo KarMind) -->
+    <table border="0" cellpadding="10" cellspacing="0" width="100%" style="background-color: #2D3748; border-radius: 8px; margin-bottom: 20px;">
+        <tr style="background-color: #334155; border-radius: 8px 8px 0 0;">
+            <td colspan="2">
+                <p class="kar-h2" style="font-family: 'Inter', sans-serif; color: #E2E8F0; font-size: 16px; font-weight: 700; margin: 0;">
+                    Detalles del Solicitante
+                </p>
+            </td>
+        </tr>
+        <tr>
+            <td class="kar-data-label" width="30%" style="font-family: 'Inter', sans-serif; color: #94A3B8; font-weight: 600; font-size: 14px;">Nombre:</td>
+            <td class="kar-data-value" width="70%" style="font-family: 'Inter', sans-serif; color: #E2E8F0; font-weight: 400; font-size: 14px;">{{pqrsf.nombres}} {{pqrsf.apellidos}}</td>
+        </tr>
+        
+        <tr>
+            <td class="kar-data-label" style="font-family: 'Inter', sans-serif; color: #94A3B8; font-weight: 600; font-size: 14px;">Email:</td>
+            <td class="kar-data-value" style="font-family: 'Inter', sans-serif; color: #3B82F6; font-weight: 400; font-size: 14px;"><a href="mailto:{{pqrsf.correo}}" class="kar-link" style="color: #3B82F6;">{{pqrsf.correo}}</a></td>
+        </tr>
+        <tr>
+            <td class="kar-data-label" style="font-family: 'Inter', sans-serif; color: #94A3B8; font-weight: 600; font-size: 14px;">Teléfono:</td>
+            <td class="kar-data-value" style="font-family: 'Inter', sans-serif; color: #E2E8F0; font-weight: 400; font-size: 14px;">{{pqrsf.telefono}}</td>
+        </tr>
+        <tr>
+            <td class="kar-data-label" style="font-family: 'Inter', sans-serif; color: #94A3B8; font-weight: 600; font-size: 14px;">Tipo de PQRSF:</td>
+            <td class="kar-data-value" style="font-family: 'Inter', sans-serif; color: #E2E8F0; font-weight: 400; font-size: 14px;">{{pqrsf.tipo}}</td>
+        </tr>
+    </table>
+    
+    <!-- Bloque de Mensaje -->
+    <p class="kar-h2" style="font-family: 'Inter', sans-serif; color: #E2E8F0; font-size: 18px; font-weight: 700; margin: 0 0 10px 0;">
+        Mensaje del Usuario:
+    </p>
+    <div style="background-color: #0F172A; padding: 15px; border-radius: 8px; border-left: 4px solid #3B82F6; margin-bottom: 25px;">
+        <p class="kar-p" style="font-family: 'Inter', sans-serif; color: #E2E8F0; font-size: 15px; line-height: 1.6; margin: 0;">
+            {{pqrsf.descripcion}}
+        </p>
+    </div>
+
+    <!-- CTA para Administrador -->
+    <p style="text-align: center;">
+        <a href="{{admin_cta_url}}" target="_blank" class="kar-btn-accent" style="background-color: #10B981; border-radius: 8px; color: #1F2937; display: inline-block; font-size: 16px; font-weight: 700; padding: 12px 24px; text-align: center; text-decoration: none; box-shadow: 0 2px 4px rgba(16, 185, 129, 0.4);">
+            Responder a la Solicitud
+        </a>
+    </p>
+        """
+        mensaje_admin_render = Template(mensaje_admin_str).render(
+            Context(
+                {
+                    "pqrsf": pqrsf,
+                    "fecha_local": fecha_local,
+                    "ip_origen": ip_origen,
+                }
+            )
+        )
+        cuerpo_admin_html = render_to_string(
+            "emails/base_email.html", {"mensaje": mensaje_admin_render}
+        )
+
+        # =====================================================
+        # 🧩 MENSAJE PARA USUARIO (ACUSE DE RECIBIDO)
+        # =====================================================
+        mensaje_usuario_str = """
+            <!-- Bloque de Título y Agradecimiento -->
+    <h1 class="kar-h1" style="font-family: 'Inter', sans-serif; color: #E2E8F0; font-size: 24px; font-weight: 700; margin: 0 0 20px 0;">
+        ¡Hola {{pqrsf.nombres}}!
+    </h1>
+    
+    <p class="kar-p" style="font-family: 'Inter', sans-serif; color: #94A3B8; font-size: 15px; line-height: 1.6; margin: 0 0 20px 0;">
+        Hemos recibido tu mensaje correctamente y estamos listos para revisar tu solicitud. Agradecemos tu interés en <span style="color: #3B82F6; font-weight: 600;">KarMind</span>.
+    </p>
+    
+    <!-- Tarjeta de Confirmación de Datos Enviados -->
+    <div style="background-color: #2D3748; padding: 20px; border-radius: 8px; margin-bottom: 25px;">
+        <p class="kar-h2" style="font-family: 'Inter', sans-serif; color: #10B981; font-size: 16px; font-weight: 700; margin: 0 0 10px 0;">
+            Tu mensaje enviado:
+        </p>
+        <p class="kar-p" style="font-family: 'Inter', sans-serif; color: #E2E8F0; font-size: 15px; line-height: 1.6; margin: 0;">
+            {{pqrsf.descripcion}}
+        </p>
+    </div>
+    
+    <!-- Bloque de Próximos Pasos -->
+    <p class="kar-h2" style="font-family: 'Inter', sans-serif; color: #E2E8F0; font-size: 18px; font-weight: 700; margin: 0 0 10px 0;">
+        ¿Qué sigue ahora?
+    </p>
+    <ul style="padding-left: 20px; margin: 0 0 30px 0;">
+        <li class="kar-p" style="font-family: 'Inter', sans-serif; color: #94A3B8; font-size: 15px; line-height: 1.6; margin-bottom: 8px;">
+            Un integrante de nuestro equipo revisará tu solicitud y te contactará proximamente para atender tu solicitud.
+        </li>
+        
+    </ul>
+
+    <!-- Footer para el Hash Legal -->
+    <div style="background-color: #0F172A; padding: 10px; border-radius: 6px; text-align: center;">
+        <p class="kar-footer" style="color: #475569; font-size: 12px; line-height: 1.5; margin: 0;">
+            ID de Transacción Legal:<br>
+            <span style="color: #94A3B8; font-family: monospace; font-size: 11px; word-break: break-all;">
+                {{ pqrsf.consentimiento_hash }} - {{ pqrsf.fecha_autorizacion }}
+            </span>
+            <br>
+            Navegador y Dirección IP:<br>
+            <span style="color: #94A3B8; font-family: monospace; font-size: 11px; word-break: break-all;">
+                {{ pqrsf.ip_autorizacion }} - {{ pqrsf.user_agent }}
+            </span>
+            <br>
+            Puedes consultar nuestra <a href="{{ptdp_url}}" style="color: #475569;">Política de Datos Personales</a>.
+        </p>
+    </div>
+        """
+        mensaje_usuario_render = Template(mensaje_usuario_str).render(
+            Context(
+                {
+                    "pqrsf": pqrsf,
+                    "fecha_local": fecha_local,
+                    "ip_origen": ip_origen,
+                    "ptdp_url": ptdp_url,
+                }
+            )
+        )
+        cuerpo_usuario_html = render_to_string(
+            "emails/base_email.html", {"mensaje": mensaje_usuario_render}
+        )
+
+        # =====================================================
+        # 🚀 ENVÍO DE CORREOS
+        # =====================================================
+        remitente = "PQRSF KarMind <no-reply@karmind.co>"
+
+        # -----------------------------------------------------
+        # 📎 Adjuntar evidencia solo si existe y es válida
+        # -----------------------------------------------------
+        archivos_adjuntos = []
+        if pqrsf.evidencia:
+            try:
+                # Confirma que el archivo existe físicamente
+                if hasattr(pqrsf.evidencia, "path") and os.path.exists(pqrsf.evidencia.path):
+                    archivos_adjuntos.append(pqrsf.evidencia.path)
+            except Exception as e:
+                print(f"⚠️ No se pudo adjuntar la evidencia: {e}")
+
+        # -----------------------------------------------------
+        # 📤 Correo al administrador (con o sin adjunto)
+        # -----------------------------------------------------
+        general_send_mail(
+            asunto=f"📩 Nueva solicitud PQRSF #{pqrsf.id}",
+            destinatarios=[admin_email],
+            mensaje_html=cuerpo_admin_html,
+            remitente=remitente,
+            archivos_adjuntos=archivos_adjuntos if archivos_adjuntos else None,
+        )
+
+        # -----------------------------------------------------
+        # 📬 Correo al usuario (sin adjunto)
+        # -----------------------------------------------------
+        general_send_mail(
+            asunto=f"KarMind | Confirmación de tu solicitud PQRSF #{pqrsf.id}",
+            destinatarios=[user_email],
+            mensaje_html=cuerpo_usuario_html,
+            remitente=remitente,
+        )
+
+
+        print(f"✅ Correos enviados correctamente para el pqrsf #{pqrsf.id}")
+        return True
+
+    except Exception as e:
+        print(
+            f"❌ Error al procesar correos de pqrsf #{getattr(pqrsf, 'id', 'n/a')}: {e}"
         )
         return False
