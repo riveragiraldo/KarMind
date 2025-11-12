@@ -31,7 +31,9 @@ urlpatterns = [
     # 🧠 Núcleo del sistema (Aplicación 'core')
     # -----------------------------------------------------------
     path('', include('core.urls')),  # Incluye las rutas de la app 'core'
-    # path('captcha',include('recaptcha.urls')),
+    path('karmind-admin', include('admin_app.urls')),  # Incluye las rutas de la app 'admin_app'
+    path('s-app', include('surprise_app.urls')),  # Incluye las rutas de la app 'surprise_app.urls'
+    
 ]
 
 

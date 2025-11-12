@@ -1,0 +1,231 @@
+{% extends 'surprise_app/base.html' %}
+{% load static %}
+
+{% block title %}KarMind | Soluciones para empresas: Gestión Inteligente y Transformación Digital PYME{% endblock %}
+
+{% block content %}
+
+<!-- Definición de los datos de las soluciones para usar en el bucle y los modales -->
+{% comment %}
+    En una aplicación real de Django, estos datos se pasarían desde la vista.
+    Los definimos aquí como un diccionario conceptual para estructurar los modales.
+{% endcomment %}
+<script>
+    // Usamos JSON en un script block para pasar los datos al JS/Alpine.js
+    const solutionsData = [
+        {
+            id: 'gestion',
+            title: 'Sistemas de Gestión a la Medida',
+            summary: 'Desarrollo de aplicativos internos (ERPs/CRMs/Logística) diseñados para las necesidades únicas de tu operación.',
+            full_description: 'Nuestra experiencia se centra en crear sistemas que se adaptan como un guante a tus flujos de trabajo, eliminando el software genérico que fuerza a tu empresa a cambiar. Desde la gestión de pedidos y la facturación, hasta el control de la cadena de suministro, construimos herramientas robustas, escalables y fáciles de usar, garantizando la eficiencia operativa y una rápida curva de aprendizaje para tus empleados.',
+            icon: 'fa-solid fa-robot',
+            color: 'text-green-600',
+        },
+        {
+            id: 'asesoria',
+            title: 'Asesoría e Implementación Digital',
+            summary: 'Te guiamos en la adopción de herramientas de vanguardia, desde Inteligencia Artificial para negocios hasta aplicaciones y automatizaciones no-code para tu empresa.',
+            full_description: 'El futuro es híbrido. Te ayudamos a integrar herramientas de <i>Inteligencia Artificial</i> [Image of an artificial intelligence circuit board] para análisis predictivo o atención al cliente (Chatbots), y a implementar rápidamente <i>aplicaciones y automatizaciones no-code</i> para tareas repetitivas. Nuestro objetivo es que aproveches el poder de la IA y el No-Code sin necesidad de una inversión inicial masiva en infraestructura o desarrolladores.',
+            icon: 'fa-solid fa-lightbulb',
+            color: 'text-purple-600',
+        },
+        {
+            id: 'partnership',
+            title: 'Partnership y Soporte Continuo',
+            summary: 'Vamos más allá del desarrollo. Nos convertimos en tu socio tecnológico para garantizar un crecimiento responsable.',
+            full_description: 'Creemos en el <i>Humanismo Tecnológico</i>. Esto significa que priorizamos la ética, la accesibilidad y la capacitación. Ofrecemos un soporte post-implementación dedicado y un plan de evolución continua de la plataforma. Nos enfocamos en garantizar un <i>crecimiento responsable</i>, donde la tecnología empodere a tu equipo, en lugar de reemplazarlo.',
+            icon: 'fa-solid fa-handshake-angle',
+            color: 'text-blue-600',
+        },
+    ];
+</script>
+
+<!-- 1. HERO SECTION: Enfoque Humanista y Visión de Futuro -->
+<section class="bg-gray-900 text-white min-h-[85vh] flex items-center overflow-hidden relative">
+    <!-- Fondo Animado Blob (Visual) -->
+    <div class="absolute inset-0 z-0">
+        <div class="absolute top-0 left-0 w-64 h-64 bg-blue-600 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob"></div>
+        <div class="absolute top-0 right-0 w-64 h-64 bg-purple-600 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-2000"></div>
+        <div class="absolute bottom-0 left-1/2 w-64 h-64 bg-green-600 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-4000"></div>
+    </div>
+
+    <div class="container mx-auto px-6 py-24 relative z-10">
+        <div class="max-w-4xl mx-auto text-center">
+            
+            <!-- H1: Titular principal con foco en el SEO -->
+            <h1 class="text-5xl md:text-7xl font-extrabold mb-6 leading-tight" style="letter-spacing: -2px;">
+                <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-green-400">KarMind</span>:
+            </h1>
+            
+            <!-- Subtítulo H2 (SEO Secundario) -->
+            <h2 class="text-2xl md:text-4xl mb-8 font-light text-gray-300">
+                La <span class="font-bold text-white">transformación digital</span> al alcance de tu <span class="font-bold text-white">PYME</span>
+            </h2>
+
+            <!-- Lema y Propósito (Eslogan) -->
+            <p class="text-xl text-gray-400 max-w-2xl mx-auto mb-12">
+                <b>Beinvenido a la pagina principal de desayunos sorpresa.</b><br> Desarrollamos <i>soluciones para empresas</i> que quieren crecer con tecnología accesible, ética y con propósito.
+            </p>
+
+            <div class="flex flex-wrap justify-center gap-4">
+                <!-- Botón de Acción Principal (Contacto) -->
+                <a href="{% url 'core:contacto' %}" class="px-8 py-3 bg-gradient-to-r from-blue-500 to-blue-600 rounded-lg font-bold text-white text-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 shadow-blue-500/50">
+                    Quiero más información <i class="fa-solid fa-arrow-right ml-2"></i>
+                </a>
+                <!-- Botón de Acción Secundaria (Ver Soluciones) -->
+                <a href="#features" class="px-8 py-3 border-2 border-green-500/50 rounded-lg font-medium text-lg text-gray-300 hover:bg-green-500/10 transition">
+                    Ver Soluciones Tecnológicas
+                </a>
+            </div>
+            
+            <!-- Opcional: Iconografía de Confianza o Dashboard -->
+            <div class="mt-16">
+                <p class="text-gray-500 text-sm font-semibold tracking-wider uppercase">
+                    Innovación con propósito. Humanismo tecnológico.
+                </p>
+            </div>
+            
+        </div>
+    </div>
+</section>
+
+<!-- 2. SECCIÓN DE VALOR/SOLUCIONES (Features) -->
+<section id="features" class="py-24 bg-gray-50" x-data="{ openModal: false, selectedSolution: {} }">
+    <div class="container mx-auto px-6">
+        <div class="text-center max-w-3xl mx-auto mb-16">
+            <span class="inline-block px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-semibold mb-4">PARA LAS MICRO, PEQUEÑAS Y MEDIANAS EMPRESAS</span>
+            <h2 class="text-4xl font-bold text-gray-900 mb-4">Soluciones Tecnológicas para tu PYME</h2>
+            <p class="text-xl text-gray-600">Ayudamos a las empresas a simplificar y automatizar su gestión usando tecnología que realmente funciona.</p>
+        </div>
+
+        <!-- Grid de Tarjetas de Servicios -->
+        <div class="grid md:grid-cols-3 gap-8">
+            
+            <!-- Tarjeta 1: Automatización y Gestión -->
+            <div class="bg-white rounded-xl shadow-lg transition-all duration-500 hover:shadow-xl hover:-translate-y-2 p-8 flex flex-col justify-between">
+                <div>
+                    <div class="w-14 h-14 bg-green-100 rounded-lg flex items-center justify-center mb-6">
+                        <i class="fa-solid fa-robot fa-xl text-green-600"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-900 mb-3">Sistemas de Gestión a la Medida</h3>
+                    <p class="text-gray-600 mb-4">
+                        Desarrollo de aplicativos internos (ERPs/CRMs/Logística) diseñados para las necesidades únicas de tu operación.
+                    </p>
+                    <ul class="space-y-2 text-sm text-gray-500 mt-4">
+                        <li class="flex items-center"><i class="fa-solid fa-check w-4 h-4 mr-2 text-green-500"></i> Automatización de pedidos</li>
+                        <li class="flex items-center"><i class="fa-solid fa-check w-4 h-4 mr-2 text-green-500"></i> Control de inventario y producción</li>
+                    </ul>
+                </div>
+                <button @click="openModal = true; selectedSolution = solutionsData.find(s => s.id === 'gestion')"
+                        class="mt-6 w-full text-center px-4 py-2 text-sm font-semibold rounded-lg border-2 border-green-500 text-green-600 hover:bg-green-500 hover:text-white transition duration-200">
+                    Ver más <i class="fa-solid fa-arrow-right ml-1 text-xs"></i>
+                </button>
+            </div>
+
+            <!-- Tarjeta 2: Innovación y Asesoría (IA/NoCode) -->
+            <div class="bg-white rounded-xl shadow-lg transition-all duration-500 hover:shadow-xl hover:-translate-y-2 p-8 flex flex-col justify-between">
+                <div>
+                    <div class="w-14 h-14 bg-purple-100 rounded-lg flex items-center justify-center mb-6">
+                        <i class="fa-solid fa-lightbulb fa-xl text-purple-600"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-900 mb-3">Asesoría e Implementación Digital</h3>
+                    <p class="text-gray-600 mb-4">
+                        Te guiamos en la adopción de herramientas de vanguardia, desde <b>Inteligencia Artificial</b> para negocios hasta <b>aplicaciones y automatizaciones no-code</b> para tu empresa.
+                    </p>
+                    <ul class="space-y-2 text-sm text-gray-500 mt-4">
+                        <li class="flex items-center"><i class="fa-solid fa-check w-4 h-4 mr-2 text-purple-500"></i> Integración de Chatbots y IA</li>
+                        <li class="flex items-center"><i class="fa-solid fa-check w-4 h-4 mr-2 text-purple-500"></i> Estrategia de Redes Sociales</li>
+                    </ul>
+                </div>
+                <button @click="openModal = true; selectedSolution = solutionsData.find(s => s.id === 'asesoria')"
+                        class="mt-6 w-full text-center px-4 py-2 text-sm font-semibold rounded-lg border-2 border-purple-500 text-purple-600 hover:bg-purple-500 hover:text-white transition duration-200">
+                    Ver más <i class="fa-solid fa-arrow-right ml-1 text-xs"></i>
+                </button>
+            </div>
+
+            <!-- Tarjeta 3: Crecimiento Sostenible (El pilar Humano/Partnership) -->
+            <div class="bg-white rounded-xl shadow-lg transition-all duration-500 hover:shadow-xl hover:-translate-y-2 p-8 flex flex-col justify-between">
+                <div>
+                    <div class="w-14 h-14 bg-blue-100 rounded-lg flex items-center justify-center mb-6">
+                        <i class="fa-solid fa-handshake-angle fa-xl text-blue-600"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-900 mb-3">Partnership y Soporte Continuo</h3>
+                    <p class="text-gray-600 mb-4">
+                        Vamos más allá del desarrollo. Nos convertimos en tu socio tecnológico para garantizar un <i>crecimiento responsable</i>.
+                    </p>
+                    <ul class="space-y-2 text-sm text-gray-500 mt-4">
+                        <li class="flex items-center"><i class="fa-solid fa-check w-4 h-4 mr-2 text-blue-500"></i> Capacitación tecnológica a tu equipo</li>
+                        <li class="flex items-center"><i class="fa-solid fa-check w-4 h-4 mr-2 text-blue-500"></i> Evolución continua de la plataforma</li>
+                    </ul>
+                </div>
+                <button @click="openModal = true; selectedSolution = solutionsData.find(s => s.id === 'partnership')"
+                        class="mt-6 w-full text-center px-4 py-2 text-sm font-semibold rounded-lg border-2 border-blue-500 text-blue-600 hover:bg-blue-500 hover:text-white transition duration-200">
+                    Ver más <i class="fa-solid fa-arrow-right ml-1 text-xs"></i>
+                </button>
+            </div>
+        </div>
+        
+        <div class="text-center mt-16">
+            <p class="text-gray-500 text-sm font-semibold tracking-wider uppercase">
+                Construyendo soluciones. Juntos.
+            </p>
+        </div>
+
+    </div>
+    
+    <!-- MODAL DE DETALLE DE SOLUCIÓN -->
+    <div x-cloak x-show="openModal" 
+         class="fixed inset-0 z-50 overflow-y-auto bg-gray-900 bg-opacity-75 flex items-center justify-center p-4"
+         x-transition:enter="ease-out duration-300"
+         x-transition:enter-start="opacity-0"
+         x-transition:enter-end="opacity-100"
+         x-transition:leave="ease-in duration-200"
+         x-transition:leave-start="opacity-100"
+         x-transition:leave-end="opacity-0">
+        
+        <!-- Contenido del Modal -->
+        <div x-show="openModal" 
+             @click.away="openModal = false" 
+             x-transition:enter="ease-out duration-300"
+             x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+             x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100"
+             x-transition:leave="ease-in duration-200"
+             x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100"
+             x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+             class="bg-white rounded-xl shadow-2xl w-full max-w-2xl transform transition-all">
+            
+            <div class="p-6 md:p-8">
+                <!-- Header del Modal -->
+                <div class="flex items-start justify-between border-b pb-4 mb-4">
+                    <h3 class="text-2xl font-bold text-gray-900" x-text="selectedSolution.title"></h3>
+                    <button @click="openModal = false" class="text-gray-400 hover:text-gray-600 transition">
+                        <i class="fa-solid fa-xmark fa-lg"></i>
+                    </button>
+                </div>
+                
+                <!-- Icono y Resumen -->
+                <div class="flex items-center space-x-4 mb-6">
+                    <div class="w-12 h-12 rounded-full flex items-center justify-center bg-gray-100 shadow-inner">
+                        <i :class="[selectedSolution.icon, selectedSolution.color, 'fa-xl']"></i>
+                    </div>
+                    <p class="text-lg text-gray-700 font-medium" x-text="selectedSolution.summary"></p>
+                </div>
+                
+                <!-- Contenido Detallado -->
+                <div class="text-gray-600 leading-relaxed space-y-4">
+                    <!-- Usamos innerHTML para renderizar el texto que contiene <b> y <i> (como en Tarjeta 2 y 3) -->
+                    <p x-html="selectedSolution.full_description"></p>
+                </div>
+                
+                <!-- Footer/Call to Action del Modal -->
+                <div class="mt-8 pt-4 border-t flex justify-end">
+                    <a href="{% url 'core:contacto' %}" @click="openModal = false" class="px-6 py-2 bg-gradient-to-r from-blue-500 to-green-500 rounded-lg font-semibold text-white hover:opacity-90 transition">
+                        Contactar para esta Solución <i class="fa-solid fa-envelope ml-2"></i>
+                    </a>
+                </div>
+            </div>
+            
+        </div>
+    </div>
+</section>
+{% endblock %}

@@ -282,3 +282,15 @@ class PQRSForm(forms.ModelForm):
             raise ValidationError("El archivo excede el tamaño máximo permitido (5 MB).")
 
         return archivo
+
+
+# -------------------------------------------------------
+# # 📎 Actualización de formulario ¿Olvidó su contraseña?
+# -------------------------------------------------------
+from django.contrib.auth.forms import PasswordResetForm
+# Actualiza para añadir recaptcha al formulario de restablecimiento de la contraseña
+class CustomPasswordResetForm(PasswordResetForm):
+    captcha = ReCaptchaField(
+        widget=ReCaptchaV2Checkbox(attrs={"class": "form-control", "id": "recaptcha"}),
+        label="Validación Humana:",
+    )

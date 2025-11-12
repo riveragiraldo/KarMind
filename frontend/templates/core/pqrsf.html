@@ -149,14 +149,44 @@
             <p class="mt-1 text-sm text-red-400">{{ form.acepta_politica.errors|striptags }}</p>
           {% endif %}
 
-          <div class="py-2">
-            <!-- reCAPTCHA Widget -->
-            {{ form.captcha }}
-            <!-- Mostramos errores específicos del captcha si los hay -->
-            {% if form.captcha.errors %}
-              <p class="text-red-400 text-sm mt-2">{{ form.captcha.errors|first }}</p>
-            {% endif %}
+          <div class="py-2 flex justify-center">
+            <div class="w-full max-w-md">
+              <!-- Contenedor visual del captcha -->
+              <div id="captcha-wrapper" class="bg-gray-800/50 border-t-2 border-gray-700 rounded-lg p-3 flex justify-center transition-all duration-200 ease-in-out hover:bg-gray-800/70 focus-within:ring-2 focus-within:ring-blue-500" aria-hidden="false" role="group">
+                <style>
+                  /* Ajuste visual del widget */
+                  .g-recaptcha {
+                    transform: scale(1.02);
+                    transform-origin: center;
+                  }
+                  .g-recaptcha iframe {
+                    background-color: rgba(17, 24, 39, 0.95) !important;
+                    border-radius: 0.5rem;
+                  }
+                </style>
+
+                <!-- widget reCAPTCHA (no modificar) -->
+                {{ form.captcha }}
+              </div>
+
+              {% if form.captcha.errors %}
+                <p class="text-red-400 text-sm mt-2 text-center w-full">{{ form.captcha.errors|first }}</p>
+              {% endif %}
+            </div>
           </div>
+
+          <script>
+            document.addEventListener('DOMContentLoaded', () => {
+              const captchaWrapper = document.getElementById('captcha-wrapper')
+              if (captchaWrapper) {
+                const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
+                if (isMobile) {
+                  // Simplifica el contenedor en móviles
+                  captchaWrapper.className = 'flex justify-center w-full py-2'
+                }
+              }
+            })
+          </script>
 
           <!-- Botón de Envío (Incluye Loader) -->
           <div class="pt-4">
@@ -388,7 +418,7 @@
     
       function resetDropzone() {
         dropzoneText.innerHTML = `Arrastra tu archivo aquí o haz clic para seleccionarlo<br />
-        <span class="text-gray-500 text-xs">(PDF, JPG, PNG, DOC, DOCX - máx. 5MB)</span>`
+                        <span class="text-gray-500 text-xs">(PDF, JPG, PNG, DOC, DOCX - máx. 5MB)</span>`
         fileInfo.classList.add('hidden')
         dropzoneText.classList.remove('text-green-400')
         dropzoneIcon.classList.remove('text-green-400')

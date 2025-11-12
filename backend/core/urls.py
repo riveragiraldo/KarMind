@@ -8,6 +8,7 @@
 
 from django.urls import path
 from . import views
+from .views import *
 
 # Nombre de espacio (namespace) para las rutas de esta app
 app_name = 'core'
@@ -27,8 +28,12 @@ urlpatterns = [
     # Página de contacto y pqrsf (formulario con envío de correos)
     path('contacto', views.ContactoView.as_view(), name='contacto'),
     path('pqrs', views.PQRSFView.as_view(), name='pqrsf'),
-
+   
     # Autenticación de usuarios
     path('login/', views.login_view, name='login'),
     path('logout/', views.logout_view, name='logout'),
+    path("password-reset/", CustomPasswordResetView.as_view(), name="password_reset"), # REstablecer Pass
+    path("password-reset/done/",PasswordResetDoneView.as_view(),name="password_reset_done"), # Exito de restablecimiento de pass
+    path("reset/<uidb64>/<token>/",PasswordResetConfirmView.as_view(),name="password_reset_confirmation",),# Página de restablecimiento de la contraseña
+    path("reset/done/",PasswordResetCompleteView.as_view(),name="password_reset_complete",),
 ]

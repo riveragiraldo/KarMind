@@ -61,6 +61,8 @@ INSTALLED_APPS = [
     
     # --- Aplicaciones Locales ---
     'core',  # App principal del sitio (gestión de entidades y configuración)
+    'admin_app', # Administración
+    'surprise_app', # Gestión de los desayunos sorpresa
 
     # --- Aplicaciones de Terceros ---
     'import_export',     # Importación/exportación de datos desde admin
