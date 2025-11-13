@@ -416,6 +416,7 @@ from django.conf import settings
 from django.views.decorators.cache import never_cache
 from django.views.decorators.csrf import csrf_protect
 from django.views.decorators.debug import sensitive_post_parameters
+from .forms import CustomSetPasswordForm
 
 
 
@@ -501,14 +502,14 @@ class CustomPasswordResetView(LogoContextMixin, PasswordResetView):
 INTERNAL_RESET_SESSION_TOKEN = "_password_reset_token"
 
 
-class PasswordResetDoneView(PasswordContextMixin, TemplateView):
+class PasswordResetDoneView(LogoContextMixin,PasswordContextMixin, TemplateView):
     template_name = "core/password_reset_done.html"
     title = ("Password reset sent")
     # title = _("Password reset sent")
 
 
-class PasswordResetConfirmView(PasswordContextMixin, FormView):
-    form_class = SetPasswordForm
+class PasswordResetConfirmView(LogoContextMixin,PasswordContextMixin, FormView):
+    form_class = CustomSetPasswordForm
     post_reset_login = False
     post_reset_login_backend = None
     reset_url_token = "set-password"
@@ -579,6 +580,8 @@ class PasswordResetConfirmView(PasswordContextMixin, FormView):
             auth_login(self.request, user, self.post_reset_login_backend)
         return super().form_valid(form)
 
+    
+    
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         if self.validlink:
@@ -597,7 +600,7 @@ class PasswordResetConfirmView(PasswordContextMixin, FormView):
 
 
 
-class PasswordResetCompleteView(PasswordContextMixin, TemplateView):
+class PasswordResetCompleteView(LogoContextMixin,PasswordContextMixin, TemplateView):
     template_name = "core/password_reset_complete.html"
     title = ("Password reset complete")
     # title = _("Password reset complete")

@@ -294,3 +294,16 @@ class CustomPasswordResetForm(PasswordResetForm):
         widget=ReCaptchaV2Checkbox(attrs={"class": "form-control", "id": "recaptcha"}),
         label="Validación Humana:",
     )
+
+# -------------------------------------------------------
+# # 📎 Actualización de formulario Actualizar e Password
+# -------------------------------------------------------
+from django import forms
+from django.contrib.auth.forms import SetPasswordForm
+
+
+class CustomSetPasswordForm(SetPasswordForm):
+    captcha = ReCaptchaField(
+        widget=ReCaptchaV2Checkbox(attrs={"class": "form-control"}),
+        label="Validación humana:",
+    )
